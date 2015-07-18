@@ -1,95 +1,277 @@
 <!doctype html>
 <html>
   <head>
-    <title>Socket.io Test</title>
-    <script src="/socket.io/socket.io.js"></script>
+    <title>Socket Test</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.js"></script>
+    <script type="text/javascript" src="js/sb-1.4.1.js"></script>
+
+    <script type="text/javascript">
+
+	// when page loads call spacebrew setup function 
+	$(window).on("load", setupSpacebrew);
+
+	// wher the jquery mobile is ready to initialize the UI call the setUI function 
+	$(document).bind("pageinit", setupUI);
+
+	// Spacebrew Object
+	var sb
+		, app_name = "Dashboard Client"
+		, values = {} 
+		;
+
+	/**
+	 * setupSpacebrew Function that creates and configures the connection to the Spacebrew server.
+	 * 				  It is called when the page loads.
+	 */
+	function setupSpacebrew (){
+		var random_id = "0000" + Math.floor(Math.random() * 10000);
+ 
+		app_name = app_name + ' ' + random_id.substring(random_id.length-4);
+
+		console.log("Setting up spacebrew connection");
+		sb = new Spacebrew.Client();
+
+		sb.name(app_name);
+		sb.description("Dashboard Client.");
+
+		//List subscribers
+		sb.addSubscribe("location_pos", "string");
+
+		// override Spacebrew events - this is how you catch events coming from Spacebrew
+		sb.onStringMessage = onStringMessage;
+		sb.onOpen = onOpen;
+
+		// connect to spacbrew
+		sb.connect();
+	};
+
+        /**
+        * Function that is called when Spacebrew connection is established
+        */
+        function onOpen() {
+                        var message = "Connected as <strong>" + sb.name() + "</strong>. ";
+                        if (sb.name() === app_name) {
+                                message += "<br>You can customize this app's name in the query string by adding <strong>name=your_app_name</strong>."
+                        }
+                        $("#name").html( message );
+
+			canvasApp();
+        }
+
+
+        /**
+        * setupUI Function that create the event listeners for the sliders. It creates an callback
+        *                 function that sends a spacebrew message whenever an slide event is received.
+        */
+        function setupUI() {
+                        console.log("Setting up the UI listeners");
+                        // when the slider state changes it sends a message to spacebrew
+                        $(".slider").bind( "change", function(event, ui) {
+                                if (values[event.target.id] != event.target.value) {
+                                        sb.send(event.target.id, "range", event.target.value);
+                                        values[event.target.id] = event.target.value;
+                                }
+                     });
+        }
+
+        /**
+        * onRangeMessage Function that is called whenever new spacebrew range messages are received.
+        *                                It accepts two parameters:
+        * @param  {String} name        Holds name of the subscription feed channel
+        * @param  {Integer} value      Holds value received from the subscription feed
+        */
+        function onStringMessage(name, value){
+
+        	console.log("Received new string ", value);
+		arrVals = value.split(',');
+		
+		_i = parseInt(arrVals[0]);
+
+		arrLocPerson[_i].set(arrVals[1], arrVals[2], arrVals[3]);	
+        };
+
+    </script>
+
+    <style>
+       	.square {
+         border-style: solid;
+         border-width: 3px;
+         border-color: #7f7f7f;
+         width: 400px;
+         height: 400px;
+       }
+
+	body {
+		background-color: #f0f0f0;
+	}
+
+        #frame {position:relative;}
+        .widget_small {
+		width:335px;height:460px;background-color:#000000;position:absolute;
+	}
+
+	.widget_med {
+		width:685px;height:460px;background-color:#000000;position:absolute;
+	}
+
+	.txtSmallWhite {
+		padding: 20px;
+		font-family: "Helvetica Neue";
+		color: #ffffff;
+		font-size: 16px;
+	}
+
+	.txtSmallGreen {
+		font-family: "Helvetica Neue";
+		color: #00ff00;	
+		font-size: 16px;
+	}
+
+	#labmovement_canvas {
+	
+	}
+
+    </style>
   </head>
+
   <body>
     <script type="text/javascript">
 
-      window.addEventListener('load', eventWindowLoaded, false);
+      /**********************
+      * LOCATION PERSON
+      **********************/
+      function LocationPerson(_x, _y, _color) {
 
-      var socket = io.connect();
-      
-      socket.on('client_light', function(data){
-	console.log(data.val);
-        $('#light_val').text(data.val);
+	this.x = _x;
+        this.y = _y;
+	this.color = _color;
+        this.arrPts = [];
 
-        _lightY = data.val + 100;
-      });
+        this.move = function() {
 
-      $(document).ready(function(){
-        $('#text').keypress(function(e){
-          socket.emit('client_data', {'letter': String.fromCharCode(e.charCode)});
-        });
-      });
+	  this.x += Math.floor(Math.random() * 20 - 10);
+	  this.y += Math.floor(Math.random() * 20 - 10);
 
-      function eventWindowLoaded() {
-	canvasApp();	
+          this.arrPts.push([this.x,this.y]);
+
+        };
+
+        this.render = function() {
+
+          context.beginPath();
+	  context.arc(this.x, this.y, 7, 0, 2 * Math.PI, false);
+	  context.fillStyle = this.color;
+	  context.fill();
+        };
+
+        this.drawLines = function() {
+
+          context.beginPath();
+	 
+	  context.strokeStyle = this.color;
+	  context.lineWidth = 1;
+
+          _length = this.arrPts.length;
+
+	  if (_length>0) {
+            context.moveTo(this.arrPts[0][0],this.arrPts[0][1]);
+
+            if (_length > 300) {
+              this.arrPts.shift(); 
+            }
+          }
+
+	  for (var i=1; i<this.arrPts.length; i++) {
+
+            context.lineTo(this.arrPts[i][0],this.arrPts[i][1]);
+          }
+          context.stroke();
+
+        };
+
+        this.set = function(_x, _y, _z) {
+	  this.x = _x;
+	  this.y = _y;
+	  this.z = _z;
+          
+          this.arrPts.push([this.x,this.y]);
+        }
       }
+
 
       function canvasApp()
       {
         console.log(window.innerWidth + " " + window.innerHeight);
 
-	light_canvas = document.getElementById('light_canvas');
-	light_canvas.height = window.innerHeight;
-	light_canvas.width = window.innerWidth;
-
-	kinect_canvas = document.getElementById('kinect_canvas');
-	kinect_canvas.height = window.innerHeight;
-	kinect_canvas.width = window.innerWidth;
-
 	FRAME_SIZE_W = window.innerWidth;
 	FRAME_SIZE_H = window.innerHeight;
 
-  	if (!light_canvas || !light_canvas.getContext ) {
-    		return;
-  	}
-  
-  	context = light_canvas.getContext('2d');
+        //var COLORS = [ '#ffff00', '#ff00ff', '#00ffff'];
+        var COLORS = [ '#ffff00', '#ff00ff', '#00ffff', '#ff0000', '#00ff00', '#0000ff' ];
+	var COLOR_NUM = COLORS.length;
+	var _colorIndex = 0;
+
+        var arrLocPerson = new Array();
+
+  	context = labmovement_canvas.getContext('2d');
 	if (!context) {
    	 	return;
   	}
 
-	//context.strokeStyle = '#cfcfcf';
-	context.lineWidth = 1;
+	context.strokeStyle = '#ffffff';
+	context.lineWidth = 2;
 
         setInterval(run,intervalTime);
 
+	//Test vals
+	arrLocPerson[0] = new LocationPerson(150,150,COLORS[0]);
+	arrLocPerson[1] = new LocationPerson(150,150,COLORS[1]);
+	arrLocPerson[2] = new LocationPerson(150,150,COLORS[2]);
+	arrLocPerson[3] = new LocationPerson(150,150,COLORS[3]);
+	arrLocPerson[4] = new LocationPerson(150,150,COLORS[4]);
+	arrLocPerson[5] = new LocationPerson(150,150,COLORS[5]);
+
         function run() {
-          //console.log("run");
 
-          render_light();
+	  context.clearRect(0, 0, labmovement_canvas.width, labmovement_canvas.height);
 
-          render_kinect();
+          render_lab();
+	  render_lab_ppl();
         }
 
-	function render_kinect() {
+	function render_lab_ppl() {
 
+	  for (var i=0; i<6; i++)
+          {
+	    arrLocPerson[i].move();
+	    arrLocPerson[i].drawLines();
+	  }
+
+	  for (var i=0; i<6; i++)
+          {
+	    arrLocPerson[i].render();
+	  }
 	}
 
-        function render_light() {
+	function render_lab() {
+	
+	  context.strokeStyle = "#ffffff";
+	  context.lineWidth = 2;
 
           context.beginPath();
-          context.moveTo(_lightX,_lastLightY);
-
-          _lightX += 2;
-          if (_lightX > SQUARE_SIZE) {
-            _lightX=0;
-          } else {
-
-             context.lineTo(_lightX, _lightY);
-          }
-
-          _lastLightY = _lightY;
-
+          context.moveTo(25,0);
+          context.lineTo(250,40);
+          context.lineTo(250,80);
+          context.lineTo(305,80);
+          context.lineTo(305,340);
+          context.lineTo(25,340);
+          context.lineTo(25,0);
           context.stroke();
-        }
+	}
+
       }
 
-      const FRAME_RATE = 40;
+      const FRAME_RATE = 10;
       const SQUARE_SIZE = 400;
 
       var FRAME_SIZE_W;
@@ -105,16 +287,29 @@
 
     </script>
 
-    <style>
-       .square {
-         border-style: solid;
-         border-width: 3px;
-         border-color: #7f7f7f;
-         width: 400px;
-         height: 400px;
-       }
-    </style>
+    <div id="frame">
 
+ 	<div class="widget_small" style="left:20px;top:20px">
+	</div>
+
+ 	<div class="widget_small" style="left:375px;top:20px">
+
+		<div class="txtSmallWhite">
+		LAB<br>
+		MOVEMENT<br>
+		-
+		</div>
+
+		<canvas id="labmovement_canvas" width="325" height="400">
+		your browser does not support HTML 5 Canvas
+		</canvas>
+
+	</div>
+    </div>
+
+    <div id="light_val"></div>
+
+<!--
     <div id="light" class="square">
 
 	<canvas id="light_canvas" width="400" height="400">
@@ -126,5 +321,7 @@
 	</canvas>
 
     </div>
+-->
+
   </body>
 </html>

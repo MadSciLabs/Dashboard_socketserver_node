@@ -2,11 +2,25 @@
 var http = require('http');
 var url = require('url');
 var fs = require('fs');
+var express = require('express');
 var server;
+
+var app = express();
+app.use(express.static('public'));
 
 console.log("START");
 
+app.get('/dashboard.html', function(req,res) {
+        res.sendfile("dashboard.html");
+});
+
+app.listen(80,function () {
+        console.log("started on port 80");
+});
+
+/*
 server = http.createServer(function(req, res){
+
     // your normal server code
     var path = url.parse(req.url).pathname;
     switch (path){
@@ -37,8 +51,10 @@ send404 = function(res){
     res.end();
 };
 
-server.listen(8080);
+server.listen(80);
+*/
 
+/*
 // use socket.io
 var io = require('socket.io').listen(server);
 
@@ -67,12 +83,12 @@ io.sockets.on('connection', function(socket){
     });
 
     //SEND OUT
-/*
     setInterval(function(){
 	if (true) { dirty = false;
         socket.emit('client_light', {'val': _client_light});
         }
     }, 10);
-*/
 
 });
+
+*/
