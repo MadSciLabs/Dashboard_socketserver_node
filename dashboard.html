@@ -2,10 +2,8 @@
 <head>
   <script src="https://cdn.firebase.com/js/client/2.2.1/firebase.js"></script>
   <script src='https://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js'></script>
-  <link rel="stylesheet" type="text/css" href="/resources/tutorial/css/example.css">
 
   <script src="http://cdnjs.cloudflare.com/ajax/libs/p5.js/0.4.17/p5.js"></script>
-
   <script src="dashboard.widgets.js"></script>
   <script src="dashboard.content.js"></script>
 
@@ -13,7 +11,7 @@
 	body {padding:0; margin:0; font-family:arial,helvetica,clean,terminal,sans-serif; font-size:9px; line-height:13px; background-color:#322f31; border:0px;}
 
         .titleSmallWhite {
-		padding: 10px;
+		padding: 8px;
 		font-family: "Helvetica Neue";
 		color: #ffffff;
 		font-size: 9px;
@@ -38,27 +36,19 @@
 
   // CREATE A REFERENCE TO FIREBASE
   var dashboardRef = new Firebase('https://pyb2rno88uh.firebaseio-demo.com/');
- 
-  var messagesRef = dashboardRef.child("messages")
-  var widgetsRef = dashboardRef.child("widgets")
+  var widgetsRef = dashboardRef.child("widgets");
 
-  var widgetsLight = widgetsRef.child("light")
-  var widgetsSound = widgetsRef.child("sound")
-  var widgetsTemp = widgetsRef.child("temp")
-   
-  widgetsLight.set({value:0});
-  widgetsSound.set({value:0});
-  widgetsTemp.set({value:0});
- 
-  // REGISTER DOM ELEMENTS
-  var messageField = $('#messageInput');
-  var nameField = $('#nameInput');
-  var messageList = $('#example-messages');
+  var arrWidgets = [];
 
   //canvas
   var _widgetLab = new widget_lab();
   var _widgetElevator = new widget_elevator();
   var _widgetFood = new widget_food();
+  var _widgetMusic = new widget_music();
+
+  var _widgetLight = new widget_light();
+//  var _widgetTemp = new widget_temp();
+//  var _widgetSound = new widget_sound();
 
   //Animation
   const FRAME_RATE = 20;
@@ -68,7 +58,7 @@
   $(document).ready(function(){
 
     getWindowSize();
-    drawWidgets();
+    initWidgets();
 
     //SET THE INTERVAL FOR DRAWING
     setInterval(run,intervalTime);
@@ -81,7 +71,7 @@
  
     function doneResizing(){
       getWindowSize();
-      drawWidgets();
+      drawWidgets(0);
     };
 
   });
@@ -98,6 +88,12 @@
 
 	_widgetFood.update();
 	_widgetFood.draw();
+	
+	_widgetMusic.update();
+	_widgetMusic.draw();
+	
+	_widgetLight.update();
+	_widgetLight.draw();
   }
 
   //SIZE FUNCTIONS
@@ -110,7 +106,12 @@
     UNIT_SIZE_HEIGHT = Math.round(UNIT_SIZE_WIDTH * UNIT_RATIO);
   }
 
-  function drawWidgets() {
+  function initWidgets() {
+
+    drawWidgets(1);
+  }
+
+  function drawWidgets(_init) {
 
 	console.log(">" + widgetContent.length);
 
@@ -129,6 +130,42 @@
 		//if name exists
 		if (widgetContent[i].name != "lab") {
 			$("#" + widgetContent[i].name).append("<div class=\"titleSmallWhite\">" + widgetContent[i].title + "<br>-" + "</div>");
+		}
+
+		//if Data
+		if (widgetContent[i].isData == 1 && _init == 1) {
+
+			console.log("init : " + i + " " + widgetContent[i].name);
+
+    			arrWidgets[i] = widgetsRef.child(widgetContent[i].name);
+    			arrWidgets[i].set(0);
+
+			if (widgetContent[i].name == "temp") {
+
+/*
+				arrWidgets[i].on('child_added', function(snapshot) {
+        				var data = snapshot.val();
+					_widgetTemp.set(data);
+      				});
+*/
+			}
+
+			if (widgetContent[i].name == "light") {
+
+				arrWidgets[i].on('child_added', function(snapshot) {
+        				var data = snapshot.val();
+					_widgetLight.set(data);
+      				});
+			}
+
+			if (widgetContent[i].name == "sound") {
+/*
+				arrWidgets[i].on('child_added', function(snapshot) {
+        				var data = snapshot.val();
+					_widgetSound.set(data);
+      				});
+*/
+			}
 		}
 
 		//if canvas
@@ -163,34 +200,13 @@
 			if (widgetContent[i].name == "food") {
 				_widgetFood.init(widgetContent[i].name + '_canvas');
 			}
-		}
 
-
-		$("#" + widgetContent[i].name).css("width",_w);
-		$("#" + widgetContent[i].name).css("height",_h);
-		$("#" + widgetContent[i].name).css("top",_y);
-		$("#" + widgetContent[i].name).css("left",_x);
-		$("#" + widgetContent[i].name).css("background-color",widgetContent[i].background);
-	}
-  }
-
-
-</script>
-
-
-</head>
-<body>
-
-<div id="main" style="position:relative">
-</div>
-
-</body>
-</html>
-
+			if (widgetContent[i].name == "music") {
+				_widgetMusic.init(widgetContent[i].name + '_canvas');
 			}
 
-			if (widgetContent[i].name == "elevator") {
-				_widgetElevator.init(widgetContent[i].name + '_canvas');
+			if (widgetContent[i].name == "light") {
+				_widgetLight.init(widgetContent[i].name + '_canvas');
 			}
 		}
 
@@ -215,4 +231,5 @@
 
 </body>
 </html>
+
 

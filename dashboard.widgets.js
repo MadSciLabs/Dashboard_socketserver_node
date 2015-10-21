@@ -18,7 +18,7 @@ function widget_lab()
 
 	this.animate_dest=0;
 	this.animate_loc=0;
-	this.animate_speed=10;
+	this.animate_speed=20;
 
 	this.state = LAB_STATE_WAIT;
 
@@ -28,21 +28,21 @@ function widget_lab()
     		this.context = this.canvas.getContext('2d');
     
 		this.xa = UNIT_SIZE_WIDTH * .55;
-    		this.ya = UNIT_SIZE_WIDTH * .51;
+    		this.ya = UNIT_SIZE_WIDTH * .49;
     		this.wa = UNIT_SIZE_WIDTH * .91;
-    		this.ha = UNIT_SIZE_WIDTH * .3;
+    		this.ha = UNIT_SIZE_WIDTH * .34;
 
 		this.x1b = UNIT_SIZE_WIDTH * 1.56;
 
 		this.y1b = this.ya;
-		this.y2b = UNIT_SIZE_WIDTH * .635;
-		this.y3b = UNIT_SIZE_WIDTH * .76;
+		this.y2b = UNIT_SIZE_WIDTH * .63;
+		this.y3b = UNIT_SIZE_WIDTH * .77;
 
 		this.wb = this.wa;
-		this.hb = UNIT_SIZE_WIDTH * .05;
+		this.hb = UNIT_SIZE_WIDTH * .06;
 
 		//get travel distance needed for animating logo
-		this.animate_dest =  this.wa/2 + UNIT_SIZE_WIDTH*.05;
+		this.animate_dest = this.x1b - this.xa;
 
 		console.log("dest>" + this.animate_dest);
 
@@ -227,7 +227,6 @@ function widget_food()
 		this.offset += this.speed;
 
 		if (this.offset >= 0) {
-		//if (this.offset >= this.total_space) {
 			this.offset -= this.total_space;
 		}
 
@@ -270,5 +269,198 @@ function widget_food()
 		this.context.closePath();
 
 	}
+}
+
+function widget_music()
+{
+
+        this.context;
+        this.canvas;
+
+	this.center, this.line;
+        this.r_1,this.r_2, this.r_3, this.r_4; 
+
+	this.speed = .5;
+	this.rotation = 0;
+
+        this.init = function(_name)
+        {
+
+                this.canvas = document.getElementById(_name);
+                this.context = this.canvas.getContext('2d');
+
+		this.center = UNIT_SIZE_WIDTH*3 / 2;
+		this.line = UNIT_SIZE_WIDTH * .14
+                this.r_1 = UNIT_SIZE_WIDTH * .65;
+                this.r_2 = this.r_1 + this.line;
+                this.r_3 = this.r_1 + 2*this.line;
+                this.r_4 = this.r_1 + 3*this.line;
+
+		this.s_1 = this.line*8
+		this.s_2 = this.line*5
+		this.s_3 = this.line*8
+		this.s_4 = this.line*5
+
+        };
+
+	this.update = function()
+	{
+		this.rotation += this.speed;
+
+		if (this.rotation >= 360) {
+			this.rotation -= 360;
+		}
+	}
+
+	this.draw = function()
+	{
+		this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+		this.context.translate(this.center, UNIT_SIZE_HEIGHT);
+
+		this.context.rotate(this.rotation*Math.PI/180);
+		this.context.lineWidth = this.line;
+		this.context.strokeStyle = "#ffffff";
+
+		this.context.beginPath();
+		this.context.setLineDash([this.s_1,this.s_1]);
+		this.context.arc(0,0, this.r_1, 0, 2*Math.PI);
+		this.context.stroke();
+		this.context.closePath();
+
+		this.context.beginPath();
+		this.context.setLineDash([this.s_3,this.s_3]);
+		this.context.arc(0,0, this.r_3, 0, 2*Math.PI);
+		this.context.stroke();
+		this.context.closePath();
+
+	
+		this.context.rotate(-(2*this.rotation*Math.PI)/180);
+		this.context.strokeStyle = green1;
+
+		this.context.beginPath();
+		this.context.setLineDash([this.s_2,this.s_2]);
+		this.context.arc(0,0, this.r_2, 0, 2*Math.PI);
+		this.context.stroke();
+		this.context.closePath();
+
+		this.context.beginPath();
+		this.context.setLineDash([this.s_4,this.s_4]);
+		this.context.arc(0,0, this.r_4, 0, 2*Math.PI);
+		this.context.stroke();
+		this.context.closePath();
+
+		this.context.setTransform(1, 0, 0, 1, 0, 0);
+	}
 
 }
+
+/*
+function widget_sound()
+{
+
+        this.context;
+        this.canvas;
+
+	this.x1, this.y1, this.val;
+
+
+        this.init = function(_name)
+        {
+                this.canvas = document.getElementById(_name);
+                this.context = this.canvas.getContext('2d');
+		this.context.font = "20px Helvetica Neue";
+                
+		this.x1 = UNIT_SIZE_WIDTH * .8;
+                this.y1 = UNIT_SIZE_WIDTH * .1;
+        };
+
+	this.set = function(_val)
+	{
+		this.val = _val;
+	}
+
+	this.update = function()
+	{}
+
+	this.draw = function() {
+	{
+		this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+		this.context(this.val,this.x1,this.y1);
+	}
+}
+*/
+
+function widget_light()
+{
+        this.context;
+        this.canvas;
+
+	this.x1, this.y1, this.val;
+
+
+        this.init = function(_name)
+        {
+                this.canvas = document.getElementById(_name);
+                this.context = this.canvas.getContext('2d');
+
+		_font_size = Math.floor(UNIT_SIZE_WIDTH * .2);
+		this.context.font = _font_size + "px Helvetica Neue";
+               	this.context.fillStyle = "#ffffff";
+ 
+		this.x1 = UNIT_SIZE_WIDTH * .75;
+                this.y1 = UNIT_SIZE_WIDTH * .2;
+		this.val = 0;
+        };
+
+	this.set = function(_val)
+	{
+		this.val = _val;
+	}
+
+	this.update = function()
+	{}
+
+	this.draw = function() {
+		this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+		this.context.fillText(this.val,this.x1,this.y1);
+	}
+}
+
+/*
+function widget_temp()
+{
+
+        this.context;
+        this.canvas;
+
+	this.x1, this.y1, this.val;
+
+
+        this.init = function(_name)
+        {
+                this.canvas = document.getElementById(_name);
+                this.context = this.canvas.getContext('2d');
+                
+		this.x1 = UNIT_SIZE_WIDTH * .8;
+                this.y1 = UNIT_SIZE_WIDTH * .1;
+	
+		this.context.font = "20px Helvetica Neue";
+        };
+
+	this.set = function(_val)
+	{
+		this.val = _val;
+	}
+
+	this.update = function()
+	{}
+
+	this.draw = function() {
+		this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+		this.context(this.val,this.x1,this.y1);
+	}
+}
+*/
+
+
