@@ -26,7 +26,8 @@
 		name:"music", title:"MUSIC<br>PLAYING",
 		locX:6, locY:0, 
 		sizeX:3, sizeY:1,
-		background: gray4
+		background: gray4,
+		isCanvas: 1
 	},
 	{
 		index:3,
@@ -55,14 +56,17 @@
 		name:"sound", title:"DECIBELS<br>IN LAB",
 		locX:1, locY:2, 
 		sizeX:1, sizeY:1,
-		background: green1
+		background: green1,
+		isData: 1
 	},
 	{
 		index:7,
 		name:"light", title:"LUMENS<br>IN LAB",
 		locX:2, locY:2, 
 		sizeX:1, sizeY:1,
-		background: gray4
+		background: gray4,
+		isData: 1, 
+		isCanvas: 1
 	},
 	{
 		index:8,
@@ -84,7 +88,8 @@
 		name:"temp", title:"TEMPERATURE<BR>IN LAB",
 		locX:6, locY:3, 
 		sizeX:1, sizeY:1,
-		background: gray1
+		background: gray1,
+		isData: 1
 	},
 	{
 		index:11,
