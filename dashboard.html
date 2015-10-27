@@ -46,9 +46,9 @@
   var _widgetFood = new widget_food();
   var _widgetMusic = new widget_music();
 
-  var _widgetLight = new widget_light();
-//  var _widgetTemp = new widget_temp();
-//  var _widgetSound = new widget_sound();
+  var _widgetLight = new widget_stream();
+  var _widgetTemp = new widget_stream();
+  var _widgetSound = new widget_stream();
 
   //Animation
   const FRAME_RATE = 20;
@@ -94,6 +94,12 @@
 	
 	_widgetLight.update();
 	_widgetLight.draw();
+	
+	_widgetTemp.update();
+	_widgetTemp.draw();
+	
+	_widgetSound.update();
+	_widgetSound.draw();
   }
 
   //SIZE FUNCTIONS
@@ -137,8 +143,6 @@
 
 			console.log("init : " + i + " " + widgetContent[i].name);
 
-    			//arrWidgets[i] = widgetsRef.child(widgetContent[i].name);
-    			//arrWidgets[i].set(0);
 
 /*
 			if (widgetContent[i].name == "temp") {
@@ -206,7 +210,15 @@
 			}
 
 			if (widgetContent[i].name == "light") {
-				_widgetLight.init(widgetContent[i].name + '_canvas');
+				_widgetLight.init(widgetContent[i].name);
+			}
+
+			if (widgetContent[i].name == "temp") {
+				_widgetTemp.init(widgetContent[i].name);
+			}
+
+			if (widgetContent[i].name == "sound") {
+				_widgetSound.init(widgetContent[i].name);
 			}
 		}
 

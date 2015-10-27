@@ -57,6 +57,7 @@
 		locX:1, locY:2, 
 		sizeX:1, sizeY:1,
 		background: green1,
+		isCanvas: 1,
 		isData: 1
 	},
 	{
@@ -89,6 +90,7 @@
 		locX:6, locY:3, 
 		sizeX:1, sizeY:1,
 		background: gray1,
+		isCanvas: 1,
 		isData: 1
 	},
 	{

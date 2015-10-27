@@ -391,20 +391,27 @@ function widget_sound()
 }
 */
 
+function ucwords (str) {
+    return (str + '').replace(/^([a-z])|\s+([a-z])/g, function ($1) {
+        return $1.toUpperCase();
+    });
+}
+
 function widget_stream()
 {
         this.context;
         this.canvas;
 
 	this.x1, this.y1, this.val;
-
         this.widget;
 
-
-
-        this.init = function(_name)
+        this.init = function(_data_name)
         {
-		this.widget = widgetsRef.child(_name);
+		_name = _data_name + '_canvas';
+		_widgetName = "_widget" + ucwords(_data_name);
+
+		//Name of this data pice
+		this.widget = widgetsRef.child(_data_name);
                 this.widget.set(0);
 
                 this.canvas = document.getElementById(_name);
@@ -418,10 +425,12 @@ function widget_stream()
                 this.y1 = UNIT_SIZE_WIDTH * .2;
 		this.val = 0;
 
-                this.widget.on('child_added', function(snapshot) {
-                	var data = snapshot.val();
-			_widgetTemp.set(data);
-                });
+		console.log("Init Widget Stream");
+
+		eval("this.widget.on('child_added', function(snapshot) {\
+                	var data = snapshot.val();\
+			" + _widgetName + ".set(data);\
+                });");
 
         };
 
