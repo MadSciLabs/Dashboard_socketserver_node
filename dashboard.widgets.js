@@ -391,16 +391,22 @@ function widget_sound()
 }
 */
 
-function widget_light()
+function widget_stream()
 {
         this.context;
         this.canvas;
 
 	this.x1, this.y1, this.val;
 
+        this.widget;
+
+
 
         this.init = function(_name)
         {
+		this.widget = widgetsRef.child(_name);
+                this.widget.set(0);
+
                 this.canvas = document.getElementById(_name);
                 this.context = this.canvas.getContext('2d');
 
@@ -411,6 +417,12 @@ function widget_light()
 		this.x1 = UNIT_SIZE_WIDTH * .75;
                 this.y1 = UNIT_SIZE_WIDTH * .2;
 		this.val = 0;
+
+                this.widget.on('child_added', function(snapshot) {
+                	var data = snapshot.val();
+			_widgetTemp.set(data);
+                });
+
         };
 
 	this.set = function(_val)

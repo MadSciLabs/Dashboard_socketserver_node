@@ -137,17 +137,16 @@
 
 			console.log("init : " + i + " " + widgetContent[i].name);
 
-    			arrWidgets[i] = widgetsRef.child(widgetContent[i].name);
-    			arrWidgets[i].set(0);
-
-			if (widgetContent[i].name == "temp") {
+    			//arrWidgets[i] = widgetsRef.child(widgetContent[i].name);
+    			//arrWidgets[i].set(0);
 
 /*
+			if (widgetContent[i].name == "temp") {
+
 				arrWidgets[i].on('child_added', function(snapshot) {
         				var data = snapshot.val();
 					_widgetTemp.set(data);
       				});
-*/
 			}
 
 			if (widgetContent[i].name == "light") {
@@ -159,13 +158,14 @@
 			}
 
 			if (widgetContent[i].name == "sound") {
-/*
+
 				arrWidgets[i].on('child_added', function(snapshot) {
         				var data = snapshot.val();
 					_widgetSound.set(data);
       				});
-*/
 			}
+*/
+
 		}
 
 		//if canvas
