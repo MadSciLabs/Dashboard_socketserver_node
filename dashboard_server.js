@@ -2,6 +2,7 @@
 var http = require('http');
 var url = require('url');
 var fs = require('fs');
+var request = require('request');
 var express = require('express');
 var server;
 
@@ -10,6 +11,26 @@ app.use(express.static('public'));
 app.use(express.static('js'));
 
 console.log("START");
+
+app.get('/slack', function(req,res) {
+
+	var _url = "https://api.particle.io/v1/devices/20001f000d47343432313031/led?access_token=e373cabcfaf640695f68f947d2070635c359cf0c";
+	console.log("slack");
+	console.log(req);
+
+	request.post(
+		_url,
+		{ form: { args: 'b'}},
+		function (error, response, body) {
+			if (!error && response.statusCode == 200) {
+				console.log(body);
+			}
+		}
+	);
+
+        res.setHeader('Content-Type', 'application/json');
+        res.send(JSON.stringify({a:1}));
+});
 
 app.get('/dashboard.html', function(req,res) {
         res.sendfile("dashboard.html");
