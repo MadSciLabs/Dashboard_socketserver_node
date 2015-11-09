@@ -24,6 +24,11 @@
 <!-- CHAT JAVACRIPT -->
 <script>
 
+  //Photon 
+  var accessToken = "e373cabcfaf640695f68f947d2070635c359cf0c";
+  var deviceID = "20001f000d47343432313031"
+  var url = "https://api.spark.io/v1/devices/" + deviceID + "/analog";
+
   // SIZE VALUES
   var WIDTH = 0;
   var HEIGHT = 0;
@@ -74,8 +79,37 @@
       drawWidgets(0);
     };
 
+    //Start Photon Reading
+    getReading();
+
   });
-    
+ 
+  //Photon   
+  function getReading(){
+
+        $.ajax({
+                url: url,
+                type: 'GET',
+                //timeout: 5000,
+                data: {
+                        access_token: accessToken
+                },
+                success: function(data, status) {
+
+                        console.log(">" + status);
+
+                                volts = parseFloat(data.result);
+                                volts = volts.toFixed(2);
+
+				 _widgetLight.set(volts);
+                                console.log(volts);
+                                setTimeout(getReading, 1000);
+                },
+                fail: function() {
+                        console.log("fail");
+                }
+        });
+  }
 
   function run() {
 
@@ -142,33 +176,6 @@
 		if (widgetContent[i].isData == 1 && _init == 1) {
 
 			console.log("init : " + i + " " + widgetContent[i].name);
-
-
-/*
-			if (widgetContent[i].name == "temp") {
-
-				arrWidgets[i].on('child_added', function(snapshot) {
-        				var data = snapshot.val();
-					_widgetTemp.set(data);
-      				});
-			}
-
-			if (widgetContent[i].name == "light") {
-
-				arrWidgets[i].on('child_added', function(snapshot) {
-        				var data = snapshot.val();
-					_widgetLight.set(data);
-      				});
-			}
-
-			if (widgetContent[i].name == "sound") {
-
-				arrWidgets[i].on('child_added', function(snapshot) {
-        				var data = snapshot.val();
-					_widgetSound.set(data);
-      				});
-			}
-*/
 
 		}
 

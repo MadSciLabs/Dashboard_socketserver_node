@@ -356,39 +356,7 @@ function widget_music()
 }
 
 /*
-function widget_sound()
-{
 
-        this.context;
-        this.canvas;
-
-	this.x1, this.y1, this.val;
-
-
-        this.init = function(_name)
-        {
-                this.canvas = document.getElementById(_name);
-                this.context = this.canvas.getContext('2d');
-		this.context.font = "20px Helvetica Neue";
-                
-		this.x1 = UNIT_SIZE_WIDTH * .8;
-                this.y1 = UNIT_SIZE_WIDTH * .1;
-        };
-
-	this.set = function(_val)
-	{
-		this.val = _val;
-	}
-
-	this.update = function()
-	{}
-
-	this.draw = function() {
-	{
-		this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-		this.context(this.val,this.x1,this.y1);
-	}
-}
 */
 
 function ucwords (str) {
@@ -404,6 +372,9 @@ function widget_stream()
 
 	this.x1, this.y1, this.val;
         this.widget;
+	this.originTrackY, this.originTrackX;
+
+	var arrData = [];
 
         this.init = function(_data_name)
         {
@@ -421,9 +392,12 @@ function widget_stream()
 		this.context.font = _font_size + "px Helvetica Neue";
                	this.context.fillStyle = "#ffffff";
  
-		this.x1 = UNIT_SIZE_WIDTH * .75;
+		this.x1 = UNIT_SIZE_WIDTH * .55;
                 this.y1 = UNIT_SIZE_WIDTH * .2;
 		this.val = 0;
+
+		this.originTrackY = UNIT_SIZE_HEIGHT * .5;
+		this.originTrackX = UNIT_SIZE_WIDTH * .85;
 
 		console.log("Init Widget Stream");
 
@@ -437,51 +411,52 @@ function widget_stream()
 	this.set = function(_val)
 	{
 		this.val = _val;
+
+		_y = UNIT_SIZE_HEIGHT - ((_val / 1500) * UNIT_SIZE_HEIGHT * .8);
+
+		if (arrData.length > 100) {
+			arrData.shift();
+		}
+		arrData.push(_y);
+		console.log(arrData.length);
 	}
 
 	this.update = function()
 	{}
 
 	this.draw = function() {
+
 		this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-		this.context.fillText(this.val,this.x1,this.y1);
+		this.context.fillText(Math.floor(this.val),this.x1,this.y1);
+
+		this.context.fillStyle = "#ffffff";
+
+		this.context.beginPath(); 
+		this.context.lineWidth="3";
+		this.context.strokeStyle="#ffffff";
+
+
+		for (i=arrData.length-1; i>=0; i--) {
+
+		  _y = arrData[i];
+		  _x = i*5;
+		  _i = (arrData.length-i) * 2;		  
+
+
+		  if (i == arrData.length-1) {
+		  	this.context.fillRect(this.originTrackX-5, _y-5, 10, 10);
+			this.context.moveTo(this.originTrackX-_i, _y);
+		  } else {
+			this.context.lineTo(this.originTrackX-_i, _y);
+		  }
+
+		}
+
+		this.context.stroke(); // Draw it
 	}
 }
 
 /*
-function widget_temp()
-{
-
-        this.context;
-        this.canvas;
-
-	this.x1, this.y1, this.val;
-
-
-        this.init = function(_name)
-        {
-                this.canvas = document.getElementById(_name);
-                this.context = this.canvas.getContext('2d');
-                
-		this.x1 = UNIT_SIZE_WIDTH * .8;
-                this.y1 = UNIT_SIZE_WIDTH * .1;
-	
-		this.context.font = "20px Helvetica Neue";
-        };
-
-	this.set = function(_val)
-	{
-		this.val = _val;
-	}
-
-	this.update = function()
-	{}
-
-	this.draw = function() {
-		this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-		this.context(this.val,this.x1,this.y1);
-	}
-}
 */
 
 
