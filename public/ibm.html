@@ -188,15 +188,19 @@
 
 						if (_mode == 3) {
 
-							subMesh.rotation.y = ((i*120) + (j*12)) * Math.PI/180;
-							if (i >= 3) {
+							if (i < 3) {
+								subMesh.rotation.y = ((i*120) + (j*12)) * Math.PI/180;
+							}
+
+							if (i == 3) {
 								subMesh.rotation.x = (90) * Math.PI/180;
+								subMesh.rotation.y = ((j*12)) * Math.PI/180;
 							} 
-/*
+
 							if (i == 4) {
 								subMesh.rotation.x = (-90) * Math.PI/180;
+								subMesh.rotation.y = ( - (j*12)) * Math.PI/180;
 							}
-*/
 
 						} else {
 							subMesh.rotation.y = ((i*72) + (j*12)) * Math.PI/180;
