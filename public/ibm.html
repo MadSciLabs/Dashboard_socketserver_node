@@ -29,10 +29,21 @@
 
 			var camera, scene, renderer, controls;
 
+			var _mode = 0;
+
 			init();
 			animate();
 
+			function getParameterByName(name) {
+    				name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+    				var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+        				results = regex.exec(location.search);
+    				return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+			}
+
 			function init() {
+
+				_mode = getParameterByName("mode");
 
 				var info = document.createElement( 'div' );
 				info.style.position = 'absolute';
@@ -112,24 +123,47 @@
                                         	extrudePath: null        // or path
                                 	};
 
+					//Draw Arms
 					//cylGeometry = new THREE.CylinderGeometry(circleRadius, circleRadius, _length,50);
                                 	geometry = new THREE.ExtrudeGeometry( arcShape, extrudeSettings );
                                 	mesh = new THREE.Mesh( geometry, material3 );
-					//mesh.rotation.z = (90) * Math.PI/180;
-					//mesh.translateY(-_length/2);
-					mesh.rotation.y = (i*72) * Math.PI/180;
-                                	scene.add( mesh );
-
-
+					
 					//Draw End
 					geometry   = new THREE.SphereGeometry(circleRadius, 24, 64)
 					earthMesh = new THREE.Mesh(geometry, material3)
-					earthMesh.rotation.y = (i*72) * Math.PI/180;
-					earthMesh.translateZ(_length);
+
+					if (_mode == 2)
+					{
+						if (i < 3) {
+
+							mesh.rotation.y = (i*120) * Math.PI/180;
+							earthMesh.rotation.y = (i*120) * Math.PI/180;
+							earthMesh.translateZ(_length);
+						} else {
+							if (i == 3) {
+								mesh.rotation.x = (90) * Math.PI/180;
+								earthMesh.translateY(-_length);
+							} else {
+								mesh.rotation.x = (-90) * Math.PI/180;
+								earthMesh.translateY(_length);
+							}
+						}
+					}
+					else
+					{
+						mesh.rotation.y = (i*72) * Math.PI/180;
+						earthMesh.rotation.y = (i*72) * Math.PI/180;
+						earthMesh.translateZ(_length);
+					}
+                                	
+					scene.add( mesh );
 					scene.add(earthMesh)
 
-					//Draw Sub Arms
-					for (var j=1; j<=5; j++) {
+					if (_mode == 1)
+					{
+
+						//Draw Sub Arms
+						for (var j=1; j<=5; j++) {
 
 						_subLength = _length - Math.random()*50;
                                 	
@@ -154,8 +188,8 @@
 						earthMesh.translateZ(_subLength);
 						scene.add(earthMesh)
 */
+						}
 					}
-
 				}
 
 			}
