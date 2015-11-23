@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>The Lab</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+		<style>
+			body {
+				font-family: Monospace;
+				background-color: #222;
+				margin: 0px;
+				overflow: hidden;
+			}
+			a {
+				color: #f80;
+			}
+		</style>
+	</head>
+
+	<body>
+
+		<script src="threejs/three.min.js"></script>
+		<script src="threejs/TrackballControls.js"></script>
+
+		<script>
+
+			var container;
+
+			var camera, scene, renderer, controls;
+
+			init();
+			animate();
+
+			function init() {
+
+				var info = document.createElement( 'div' );
+				info.style.position = 'absolute';
+				info.style.top = '10px';
+				info.style.width = '100%';
+				info.style.textAlign = 'center';
+				info.style.color = '#fff';
+				info.style.link = '#f80';
+				info.innerHTML = '';
+				document.body.appendChild( info );
+
+				renderer = new THREE.WebGLRenderer();
+				renderer.setClearColor( 0x222222 );
+				renderer.setPixelRatio( window.devicePixelRatio );
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				document.body.appendChild( renderer.domElement );
+
+				scene = new THREE.Scene();
+
+				camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 1000 );
+				camera.position.set( 0, 700, 500 );
+
+				controls = new THREE.TrackballControls( camera, renderer.domElement );
+				controls.minDistance = 200;
+				controls.maxDistance = 500;
+
+				scene.add( new THREE.AmbientLight( 0x555555 ) );
+				//scene.add( new THREE.AmbientLight( 0x222222 ) );
+
+				var light = new THREE.PointLight( 0xffffff );
+				light.position.copy( camera.position );
+				scene.add( light );
+				//
+
+
+				/*
+				* SPHERE SHAPE
+				*/
+
+				var material3  = new THREE.MeshPhongMaterial()
+				var material = new THREE.MeshLambertMaterial( { color: 0xb00000, wireframe: false } );
+                                var material2 = new THREE.MeshLambertMaterial( { color: 0xff8000, wireframe: false } );
+				
+				var geometry   = new THREE.SphereGeometry(45, 24, 64)
+				var earthMesh = new THREE.Mesh(geometry, material3)
+				scene.add(earthMesh)
+
+
+                                /*
+                                * ARMS
+                                */
+
+				//Major Arms
+                                var arcShape = new THREE.Shape();
+                                var circleRadius = 20;
+
+                                arcShape.moveTo( circleRadius, 0 );
+                                arcShape.absarc( 0, 0, circleRadius, 0, 2 * Math.PI, false );
+
+				//Sub Arms
+                                var arcShapeSub = new THREE.Shape();
+                                var subCircleRadius = 10;
+
+                                arcShapeSub.moveTo( subCircleRadius, 0 );
+                                arcShapeSub.absarc( 0, 0, subCircleRadius, 0, 2 * Math.PI, false );
+
+				//Draw Arms
+				for (var i=0; i<5; i++) {
+
+					_length = 100 + Math.random()*100;
+
+                                	var extrudeSettings = {
+                                        	amount: _length,
+                                        	bevelEnabled: false,
+                                        	bevelSegments: 2,
+                                        	steps: 1,                // default 1, try 3 if path defined
+                                        	extrudePath: null        // or path
+                                	};
+
+					//cylGeometry = new THREE.CylinderGeometry(circleRadius, circleRadius, _length,50);
+                                	geometry = new THREE.ExtrudeGeometry( arcShape, extrudeSettings );
+                                	mesh = new THREE.Mesh( geometry, material3 );
+					//mesh.rotation.z = (90) * Math.PI/180;
+					//mesh.translateY(-_length/2);
+					mesh.rotation.y = (i*72) * Math.PI/180;
+                                	scene.add( mesh );
+
+
+					//Draw End
+					geometry   = new THREE.SphereGeometry(circleRadius, 24, 64)
+					earthMesh = new THREE.Mesh(geometry, material3)
+					earthMesh.rotation.y = (i*72) * Math.PI/180;
+					earthMesh.translateZ(_length);
+					scene.add(earthMesh)
+
+					//Draw Sub Arms
+					for (var j=1; j<=5; j++) {
+
+						_subLength = _length - Math.random()*50;
+                                	
+						var extrudeSettings = {
+                                        	amount: _subLength,
+                                        	bevelEnabled: false,
+                                        	bevelSegments: 2,
+                                        	steps: 1,                // default 1, try 3 if path defined
+                                        	extrudePath: null        // or path
+                                		};
+
+                                		subGeometry = new THREE.ExtrudeGeometry( arcShapeSub, extrudeSettings );
+                                		subMesh = new THREE.Mesh( subGeometry, material3 );
+						subMesh.rotation.y = ((i*72) + (j*12)) * Math.PI/180;
+                                		scene.add( subMesh );
+					
+						//Draw End
+/*
+						geometry   = new THREE.SphereGeometry(subCircleRadius, 12, 32)
+						earthMesh = new THREE.Mesh(geometry, material3)
+						earthMesh.rotation.y = ((i*72) + (j*12)) * Math.PI/180;
+						earthMesh.translateZ(_subLength);
+						scene.add(earthMesh)
+*/
+					}
+
+				}
+
+			}
+
+			function animate() {
+
+				requestAnimationFrame( animate );
+
+				controls.update();
+
+				renderer.render( scene, camera );
+
+			}
+
+		</script>
+
+	</body>
+
+</html>
