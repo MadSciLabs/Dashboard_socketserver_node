@@ -83,9 +83,17 @@
 				* SPHERE SHAPE
 				*/
 
-				var material3  = new THREE.MeshPhongMaterial()
-				var material = new THREE.MeshLambertMaterial( { color: 0xb00000, wireframe: false } );
-                                var material2 = new THREE.MeshLambertMaterial( { color: 0xff8000, wireframe: false } );
+				var material3  = new THREE.MeshPhongMaterial({
+					color: 0xdfeaf0,
+					emissive: 0x000000,
+					specular: 0x111111,
+					shininess: 82,
+					shading: THREE.SmoothShading,
+					wireframe: false,
+					metal: 0
+				})
+				//var material = new THREE.MeshLambertMaterial( { color: 0xb00000, wireframe: false } );
+                                ///var material2 = new THREE.MeshLambertMaterial( { color: 0xff8000, wireframe: false } );
 				
 				var geometry   = new THREE.SphereGeometry(45, 24, 64)
 				var earthMesh = new THREE.Mesh(geometry, material3)
@@ -159,7 +167,7 @@
 					scene.add( mesh );
 					scene.add(earthMesh)
 
-					if (_mode == 1)
+					if (_mode == 1 || _mode == 2)
 					{
 
 						//Draw Sub Arms
@@ -177,7 +185,23 @@
 
                                 		subGeometry = new THREE.ExtrudeGeometry( arcShapeSub, extrudeSettings );
                                 		subMesh = new THREE.Mesh( subGeometry, material3 );
-						subMesh.rotation.y = ((i*72) + (j*12)) * Math.PI/180;
+
+						if (_mode == 2) {
+
+							subMesh.rotation.y = ((i*120) + (j*12)) * Math.PI/180;
+							if (i >= 3) {
+								subMesh.rotation.x = (90) * Math.PI/180;
+							} 
+/*
+							if (i == 4) {
+								subMesh.rotation.x = (-90) * Math.PI/180;
+							}
+*/
+
+						} else {
+							subMesh.rotation.y = ((i*72) + (j*12)) * Math.PI/180;
+						}
+
                                 		scene.add( subMesh );
 					
 						//Draw End
