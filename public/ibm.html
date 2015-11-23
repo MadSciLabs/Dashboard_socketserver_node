@@ -73,7 +73,7 @@
 				scene.add( new THREE.AmbientLight( 0x555555 ) );
 				//scene.add( new THREE.AmbientLight( 0x222222 ) );
 
-				var light = new THREE.PointLight( 0xffffff );
+				var light = new THREE.PointLight( 0xeeeeee );
 				light.position.copy( camera.position );
 				scene.add( light );
 				//
@@ -140,7 +140,7 @@
 					geometry   = new THREE.SphereGeometry(circleRadius, 24, 64)
 					earthMesh = new THREE.Mesh(geometry, material3)
 
-					if (_mode == 2)
+					if (_mode == 2 || _mode == 3)
 					{
 						if (i < 3) {
 
@@ -167,7 +167,7 @@
 					scene.add( mesh );
 					scene.add(earthMesh)
 
-					if (_mode == 1 || _mode == 2)
+					if (_mode == 1 || _mode == 3)
 					{
 
 						//Draw Sub Arms
@@ -186,7 +186,7 @@
                                 		subGeometry = new THREE.ExtrudeGeometry( arcShapeSub, extrudeSettings );
                                 		subMesh = new THREE.Mesh( subGeometry, material3 );
 
-						if (_mode == 2) {
+						if (_mode == 3) {
 
 							subMesh.rotation.y = ((i*120) + (j*12)) * Math.PI/180;
 							if (i >= 3) {
