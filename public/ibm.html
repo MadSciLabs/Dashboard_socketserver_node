@@ -103,7 +103,6 @@
                                 /*
                                 * ARMS
                                 */
-
 				//Major Arms
                                 var arcShape = new THREE.Shape();
                                 var circleRadius = 20;
@@ -119,7 +118,7 @@
                                 arcShapeSub.absarc( 0, 0, subCircleRadius, 0, 2 * Math.PI, false );
 
 				//Draw Arms
-				for (var i=0; i<5; i++) {
+				for (var i=0; i<1; i++) {
 
 					_length = 100 + Math.random()*100;
 
@@ -132,10 +131,13 @@
                                 	};
 
 					//Draw Arms
-					//cylGeometry = new THREE.CylinderGeometry(circleRadius, circleRadius, _length,50);
-                                	geometry = new THREE.ExtrudeGeometry( arcShape, extrudeSettings );
+					geometry = new THREE.CylinderGeometry(circleRadius, circleRadius, _length,50);
+                                	//geometry = new THREE.ExtrudeGeometry( arcShape, extrudeSettings );
                                 	mesh = new THREE.Mesh( geometry, material3 );
-					
+					mesh.translateZ(.5*_length);
+					mesh.rotation.z = (90) * Math.PI/180;
+
+
 					//Draw End
 					geometry   = new THREE.SphereGeometry(circleRadius, 24, 64)
 					earthMesh = new THREE.Mesh(geometry, material3)
@@ -163,7 +165,6 @@
 						earthMesh.rotation.y = (i*72) * Math.PI/180;
 						earthMesh.translateZ(_length);
 					}
-                                	
 					scene.add( mesh );
 					scene.add(earthMesh)
 
