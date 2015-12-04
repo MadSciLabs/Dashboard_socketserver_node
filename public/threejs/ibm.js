@@ -7,14 +7,11 @@
 
 			var labels = [
 				"Openness",
-				"Emotional Range",
+				"Emotional range",
 				"Agreeableness",
 				"Extraversion",
-				"Conscientousness"
+				"Conscientiousness"
 			]
-
-			//init();
-			//animate();
 
 			function getParameterByName(name) {
     				name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
@@ -23,7 +20,7 @@
     				return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
 			}
 
-			function init() {
+			function init(_obj) {
 
 				_mode = getParameterByName("mode");
 
@@ -144,7 +141,11 @@
 				//Draw Arms
 				for (var i=0; i<5; i++) {
 
-					_length = 140 + 0; //Math.random()*80;
+					_label = labels[i];
+					_value = _obj[_label];
+console.log(_label);
+console.log(_value);
+					_length = 140 + _value * .8;
 
 					//Draw Arms
 					geometry = new THREE.CylinderGeometry(circleRadius, circleRadius, _length,50);
@@ -173,7 +174,7 @@
 
 					} else {
 							//TEXT
-							var textGeometry = new THREE.TextGeometry(labels[i], data )
+							var textGeometry = new THREE.TextGeometry(_label, data )
 							var textMesh = new THREE.Mesh(textGeometry, material3);
 
 							if (i == 3) {
