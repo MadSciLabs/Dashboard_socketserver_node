@@ -5,6 +5,12 @@
 
 			var _mode = 0;
 
+			var texture; // = THREE.ImageUtils.loadTexture( 'images/1.jpg' );
+        		var backgroundMesh;
+
+			var backgroundScene;
+        		var backgroundCamera;
+
 			var labels = [
 				"Openness",
 				"Emotional range",
@@ -12,6 +18,14 @@
 				"Extraversion",
 				"Conscientiousness"
 			]
+
+                        var labels_abbr = [
+                                "Op",
+                                "Er",
+                                "Ag",
+                                "Co",
+                                "Ex"
+                        ]
 
 			function getParameterByName(name) {
     				name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
@@ -24,6 +38,9 @@
 
 				_mode = getParameterByName("mode");
 
+				var _w = 600;
+				var _h = 600;
+
 				var info = document.createElement( 'div' );
 				info.style.position = 'absolute';
 				info.style.top = '10px';
@@ -35,14 +52,14 @@
 				document.body.appendChild( info );
 
 				renderer = new THREE.WebGLRenderer();
-				renderer.setClearColor( 0x222222 );
+				renderer.setClearColor( 0x5bcee9 );
 				renderer.setPixelRatio( window.devicePixelRatio );
-				renderer.setSize( window.innerWidth, window.innerHeight );
-				document.body.appendChild( renderer.domElement );
+				renderer.setSize( _w, _h );
+				document.getElementById("model_frame").appendChild( renderer.domElement );
 
 				scene = new THREE.Scene();
 
-				camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 1000 );
+				camera = new THREE.PerspectiveCamera( 45, _w / _h, 1, 1000 );
 				camera.position.set( 0, -700, -500 );
 
 				controls = new THREE.TrackballControls( camera, renderer.domElement );
@@ -59,6 +76,7 @@
 				var light2 = new THREE.PointLight( 0xeeeeee );
 				camera.position.set( 0, 700, 500 );
 				light2.position.copy( camera.position );
+				camera.position.set( 0, 450, 450 );
 				scene.add( light2 );
 				//
 
@@ -69,9 +87,39 @@
 				/*
 				* DRAW BG MESH
 				*/
+				/*
+        			texture = THREE.ImageUtils.loadTexture( 'images/1.jpg' );
+        			backgroundMesh = new THREE.Mesh(
+            				new THREE.PlaneGeometry(2, 2, 0),
+            				new THREE.MeshBasicMaterial({
+                			map: texture
+            			}));
+
+        			backgroundMesh .material.depthTest = false;
+        			backgroundMesh .material.depthWrite = false;
+
+        			// Create your background scene
+        			backgroundScene = new THREE.Scene();
+        			backgroundCamera = new THREE.Camera();
+        			backgroundScene .add(backgroundCamera );
+        			backgroundScene .add(backgroundMesh );
+				*/
+
+                                var data_center = {
+                                        text : "TextGeometry",
+                                        size : 8,
+                                        height : 15,
+                                        curveSegments : 12,
+                                        font : "helvetiker",
+                                        style : "normal",
+                                        bevelEnabled : false,
+                                        bevelThickness : 1,
+                                        bevelSize : 0.5
+                                };
+
 				var data = {
 					text : "TextGeometry",
-					size : 8,
+					size : 12,
 					height : 15,
 					curveSegments : 12,
 					font : "helvetiker",
@@ -108,7 +156,7 @@
 				*/
 
 				//HAVAS
-				var textGeometry1 = new THREE.TextGeometry("Havas", data )
+				var textGeometry1 = new THREE.TextGeometry("Havas", data_center )
 				var textMesh = new THREE.Mesh(textGeometry1, material3);
 				
 				textMesh.rotation.x = (100) * Math.PI/180;
@@ -120,7 +168,7 @@
 				scene.add(textMesh)
 
 				//IBM
-				textGeometry2 = new THREE.TextGeometry("IBM", data )
+				textGeometry2 = new THREE.TextGeometry("IBM", data_center )
 				textMesh = new THREE.Mesh(textGeometry2, material3);
 
 				textMesh.rotation.x = (80) * Math.PI/180;
@@ -143,9 +191,14 @@
 
 					_label = labels[i];
 					_value = _obj[_label];
+					_label_abbr = labels_abbr[i];
 console.log(_label);
 console.log(_value);
-					_length = 140 + _value * .8;
+console.log(_label_abbr);
+					_length = 2*circleRadius + 1.8*_value + 20;
+					var _count = parseInt(_value / 10);
+
+console.log(_count);
 
 					//Draw Arms
 					geometry = new THREE.CylinderGeometry(circleRadius, circleRadius, _length,50);
@@ -163,20 +216,34 @@ console.log(_value);
 							earthMesh.translateY(_length);
 
 							//TEXT
-							var textGeometry = new THREE.TextGeometry(labels[i], data )
+							var textGeometry = new THREE.TextGeometry(_label_abbr, data )
 							var textMesh = new THREE.Mesh(textGeometry, material3);
+						
 							textMesh.rotation.z = (i*120 + 90) * Math.PI/180;
 							textMesh.translateZ(.35*circleRadius);
 							//Text Vertical
-							textMesh.translateY(-.2*circleRadius);
+							textMesh.translateY(-.3*circleRadius);
 							textMesh.translateX(45);
 							scene.add(textMesh)
 
-					} else {
-							//TEXT
-							var textGeometry = new THREE.TextGeometry(_label, data )
-							var textMesh = new THREE.Mesh(textGeometry, material3);
+							//Percentage
+							var perGeometry = new THREE.TextGeometry(_value, data )
+							var perMesh = new THREE.Mesh(perGeometry, material3);
 
+							perMesh.rotation.y = 180 * Math.PI/180;
+							perMesh.rotation.z = (-i*120 + 90) * Math.PI/180;
+
+							//Etch Depth
+							perMesh.translateZ(.35*circleRadius);
+
+							//Text Line Hieght
+							perMesh.translateY(-.3*circleRadius);
+
+							//DownLeg
+							perMesh.translateX(45);
+							scene.add(perMesh);
+
+					} else {
 							if (i == 3) {
 								_rotX = 90;
 							} else {
@@ -188,11 +255,29 @@ console.log(_value);
 							earthMesh.rotation.x = (_rotX) * Math.PI/180;
 							earthMesh.translateY(_length);
 
+							//TEXT
+							var textGeometry = new THREE.TextGeometry(_label_abbr, data )
+							var textMesh = new THREE.Mesh(textGeometry, material3);
+
+							//textMesh.rotation.z = 180 * Math.PI/180;
 							textMesh.rotation.y = (_rotX) * Math.PI/180;
 							textMesh.translateX(45);
 							textMesh.translateZ(7);
+							textMesh.translateY(-5);
 
 							scene.add(textMesh)
+
+							//PERCENTAGE
+							var perGeometry = new THREE.TextGeometry(_value, data )
+							var perMesh = new THREE.Mesh(perGeometry, material3);
+
+							perMesh.rotation.z = 180 * Math.PI/180;
+							perMesh.rotation.y = (_rotX) * Math.PI/180;
+							perMesh.translateX(45);
+							perMesh.translateZ(7);
+							perMesh.translateY(-5);
+
+							scene.add(perMesh)
 					}
 
 					scene.add( mesh );
@@ -210,6 +295,9 @@ console.log(_value);
 
 				controls.update();
 
+				//renderer.autoClear = false;
+				//renderer.clear();
+				//renderer.render(backgroundScene, backgroundCamera );
 				renderer.render( scene, camera );
 
 			}
