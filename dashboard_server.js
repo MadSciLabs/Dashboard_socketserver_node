@@ -14,13 +14,43 @@ console.log("START");
 
 app.get('/slack', function(req,res) {
 
-	var _url = "https://api.particle.io/v1/devices/20001f000d47343432313031/led?access_token=e373cabcfaf640695f68f947d2070635c359cf0c";
+	//TD Prototype #2
+	var _url_tdprototype2 = "https://api.particle.io/v1/devices/20001f000d47343432313031/led?access_token=e373cabcfaf640695f68f947d2070635c359cf0c";
+	var _url_tdprototype1 = "https://api.particle.io/v1/devices/280045000447343233323032/led?access_token=e373cabcfaf640695f68f947d2070635c359cf0c";
+
 	console.log("slack");
-	console.log(req);
+	console.log(req.query);
+	console.log(req.query.text);
+
+	var _cmd, _val;
+	if (req.query.text.indexOf(":")) {
+		var msgArr = req.query.text.split(":");
+		_cmd = msgArr[0];
+		_val = msgArr[1];
+	} else {
+		_cmd = req.query.text;
+	}
+
+	//Send out posts
+	_url = "";
+	switch (_cmd) {
+		case "td1":
+
+			_url = _url_tdprototype1;
+			break;
+		case "td2":
+
+			_url = _url_tdprototype2;
+			break;
+
+		case "cat":
+			_url = "";
+			break;
+	}
 
 	request.post(
 		_url,
-		{ form: { args: 'b'}},
+		{ form: { args: _val }},
 		function (error, response, body) {
 			if (!error && response.statusCode == 200) {
 				console.log(body);
