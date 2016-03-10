@@ -20,7 +20,7 @@ var bodyParser = require('body-parser');
 
 app.use(bodyParser.json());
 
-console.log("START");
+console.log("START PHOTON SERVER");
 
 var _stockArr = "";
 
@@ -34,26 +34,10 @@ var sPhoton1 = "280045000447343233323032";
 var sPhoton2 = "20001f000d47343432313031";
 var sPhoton3 = "350043001347343338333633";
 
+var sElectron1 = "2d0034000b51343334363138";
+
 var sSlackAction = "led";
 var sStockAction = "stockPrice";
-
-app.post('/dcsay', function(request, res ){
-
-	_t = new Date().toISOString()
-
-	console.log(_t);
-	console.log(request.body);
-
-        res.setHeader('Content-Type', 'application/json');
-        res.send(JSON.stringify({status: "ok"}));
-});
-
-app.get('/dctest', function(request, res) {
-
-	console.log(res.body);
-        res.setHeader('Content-Type', 'application/json');
-        res.send(JSON.stringify({status: "ok dc test"}));
-});
 
 app.get('/slack', function(req,res) {
 
@@ -75,13 +59,20 @@ app.get('/slack', function(req,res) {
 	_sPhoton = "";
 
 	switch (_cmd) {
+
 		case "td1":
 
 			_sPhoton = sPhoton1; 
 			break;
+
 		case "td2":
 
 			_sPhoton = sPhoton3;
+			break;
+
+		case "led":
+
+			_sPhoton = sElectron1;
 			break;
 
 		case "cat":
@@ -89,12 +80,14 @@ app.get('/slack', function(req,res) {
 			break;
 	}
 
-	var _url = "https://api.particle.io/v1/devices/" + _sPhoton + "/" + sSlackAction + "?access_token=e373cabcfaf640695f68f947d2070635c359cf0c";
+	var _urlSlack = "https://api.particle.io/v1/devices/" + _sPhoton + "/" + sSlackAction + "?access_token=e373cabcfaf640695f68f947d2070635c359cf0c";
 
-	console.log(_url);
+//	var _urlTemp = "https://api.particle.io/v1/devices/" + _sPhoton + "/temp?access_token=e373cabcfaf640695f68f947d2070635c359cf0c";
+
+	console.log(_urlSlack);
 
 	request.post(
-		_url,
+		_urlSlack,
 		{ form: { args: _val }},
 		function (error, response, body) {
 			if (!error && response.statusCode == 200) {
@@ -104,6 +97,19 @@ app.get('/slack', function(req,res) {
 		}
 	);
 
+/*
+	console.log(_urlTemp);
+	request.get(
+		_urlTemp,
+		function (error, response, body) {
+			if (!error && response.statusCode == 200) {
+				console.log("RESPONSE TEMP:" + body);
+			}
+			console.log("RESPONSE TEMP:" + response.statusCode);
+		}
+	);
+*/
+
         res.setHeader('Content-Type', 'application/json');
         res.send(JSON.stringify({status: "ok"}));
 });
@@ -112,8 +118,8 @@ app.get('/dashboard.html', function(req,res) {
         res.sendfile("dashboard.html");
 });
 
-app.listen(80,function () {
-        console.log("started on port 80");
+app.listen(3001,function () {
+        console.log("started on port 3001");
 });
 
 //Get Stock Prices
