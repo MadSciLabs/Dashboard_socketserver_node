@@ -1,0 +1,368 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <title>Lab</title>
+
+  	<script src='https://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js'></script>
+
+        <script src="raphael/raphael.js" type="text/javascript" charset="utf-8"></script>
+        <script src="raphael/helvetica.js" type="text/javascript" charset="utf-8"></script>
+
+        <script type="text/javascript" charset="utf-8">
+
+		var SQUARE_SIZE = 40;
+		var ROWS = 7; //20;
+		var COLS = 11; //30;
+
+		var LOOP_TIMER  = 100;
+		var NUM_RANDOMS = 20;
+
+		var SPINNING = false;
+	</script>
+
+  	<script src="dashboard.images.js"></script>
+
+
+        <style type="text/css" media="screen">
+            #keycatcher {
+                position: absolute;
+                top: -9999em;
+                left: -9999em;
+            }
+            p {
+                text-align: center;
+            }
+        </style>
+
+        <script type="text/javascript" charset="utf-8">
+
+		var GRID_COLOR = "#676668";
+
+		var SIZE_W = SQUARE_SIZE * COLS;
+		var SIZE_H = SQUARE_SIZE * ROWS;
+
+		var arrTriangle = [];
+		var arrLogoSet = [];
+
+
+		//Paper Object
+		var paper;
+
+		//Triangle Object
+		function Tri(_x, _y, _color)
+		{
+			this.x = _x;
+			this.y = _y;
+			this.color = _color;
+		}
+
+		function drawTriangle(_x,_y,_color,_opacity,_index)
+		{
+			var _p;
+			var _offset = 0;
+
+			if (_y % 2) {
+				_offset = 2;
+			}
+			var _t = ((_x+ _offset ) % 4);
+			var _rx = Math.floor(_x / 2);
+
+			switch(_t) {
+				case 0:
+					_p = [
+						"M", SQUARE_SIZE*_rx, SQUARE_SIZE*_y, 
+						"L", SQUARE_SIZE*(_rx+1), SQUARE_SIZE*(_y+1), 
+						"L", SQUARE_SIZE*_rx, SQUARE_SIZE*(_y+1), 
+						"L", SQUARE_SIZE*_rx, SQUARE_SIZE*_y
+					];break;
+				case 1:
+
+					_p = [
+						"M", SQUARE_SIZE*_rx, SQUARE_SIZE*_y, 
+						"L", SQUARE_SIZE*(_rx+1), SQUARE_SIZE*_y, 
+						"L", SQUARE_SIZE*(_rx+1), SQUARE_SIZE*(_y+1), 
+						"L", SQUARE_SIZE*_rx, SQUARE_SIZE*_y
+					];break;
+				case 2:
+
+					_p = [
+						"M", SQUARE_SIZE*_rx, SQUARE_SIZE*_y, 
+						"L", SQUARE_SIZE*(_rx+1), SQUARE_SIZE*_y, 
+						"L", SQUARE_SIZE*_rx, SQUARE_SIZE*(_y+1), 
+						"L", SQUARE_SIZE*_rx, SQUARE_SIZE*_y
+					];break;
+				case 3:
+
+					_p = [
+						"M", SQUARE_SIZE*(_rx+1), SQUARE_SIZE*_y, 
+						"L", SQUARE_SIZE*(_rx+1), SQUARE_SIZE*(_y+1), 
+						"L", SQUARE_SIZE*_rx, SQUARE_SIZE*(_y+1), 
+						"L", SQUARE_SIZE*(_rx+1), SQUARE_SIZE*_y
+					];break;
+			
+			}
+
+			var _t = paper.path(_p).attr({
+					"fill": _color,
+					"stroke": "none",
+					"opacity":_opacity
+				})
+				.mouseover(function() {
+
+					if (imgLogoUsed.indexOf(parseInt(this.node.id)) >= 0 && SPINNING==false) {
+						drawHomeBox();
+					} else {
+						this.attr({"opacity":1,"fill":getRandomColor()});
+					}
+				})
+				.mouseout(function() {
+
+//console.log("nid>" + this.node.id);
+//console.log("indexof>" + imgLogoUsed.indexOf(parseInt(this.node.id)));
+
+					if (imgLogoUsed.indexOf(parseInt(this.node.id)) >= 0) {
+						this.attr({"opacity":1,"fill":"#fff"});
+					} else {	
+						this.attr("opacity",0);
+					}
+				})
+
+			_t.node.id = _index;
+
+			return _t;
+
+		}
+
+		function getRandomColor()
+		{
+			var _c;
+			var _i = Math.floor(Math.random() * 4);
+
+			switch(_i) {
+				case 4:
+					_c = "none";
+					break;
+				case 5:
+					_c = "#ffffff";
+					break;
+				case 1:
+					_c = "#e3e3e3";
+					break;
+				case 2:
+					_c = "#b9b9b9";
+					break;
+				case 3:
+					_c = "#7b7b7b";
+					break;
+				case 0:
+					_c = "#ffff00";
+					break;
+			}	
+			return _c;
+		}
+
+		var drawHomeBox = function() {
+
+			arrTriangle = [];
+			arrLogoSet = [];
+
+			setLogoArray();
+
+			paper.clear();
+			SPINNING = true;
+
+			//DRAW SPACES
+			var box = paper.rect(0,0,SQUARE_SIZE*12,SQUARE_SIZE*7);
+			box.attr("fill", "#474547");
+
+			//Get 28 random triangles
+			for (i=0; i<NUM_RANDOMS; i++)
+			{
+				arrLogoSet.push(getRandomMatrixIndex());
+			}
+
+			//DRAW GRID
+			drawGrid();
+
+			//Draw All Triangles
+			for (i=0; i<ROWS; i++) {
+				for (j=0; j<COLS*2; j++) {
+
+					//Get the single index for this in the Matrix
+					_i = getMatrixIndex(j,i);
+
+					if (arrLogoSet.indexOf(_i)>=0) { _c=1;}
+					else { _c=0;}
+
+					//Push triangle objects
+					arrTriangle.push(
+						drawTriangle(j,i,getRandomColor(),_c,_i)
+					);
+
+				}
+			}
+
+			drawHomeLoop();
+		}
+
+		var drawTitle = function() {
+
+			_f = {
+				'fill':'#fff', 
+				'font-family':'BsMonofaked', 
+				'font-size':30,
+				'text-anchor': 'start'};
+
+			paper.text(SQUARE_SIZE, 1.85*SQUARE_SIZE, "HAVAS\nLAB").attr(_f);	
+		}
+
+		var drawHomeLoop = function() {
+
+			//paper.clear();
+			var _t, _i;
+
+			//For each of the 24 locations
+			_s = arrLogoSet.length;
+
+			for (_i=0; _i<_s; _i++)
+			{
+				_ti = arrLogoSet[_i];
+				_ri = getRandomMatrixIndex();
+
+				if (imgLogoUsed.indexOf(_ti) == -1 && imgLogoUsed.indexOf(_ri) == -1)
+				{
+					arrTriangle[_ti].attr("opacity", 0);
+
+					if (_i > 1)
+					{
+						arrLogoSet[_i] = _ri;
+
+						arrTriangle[_ri].attr("opacity", 1);
+						arrTriangle[_ri].attr("fill", getRandomColor() );
+					}
+
+				} else {
+					console.log("USED : " + _ti);
+				}
+			}
+
+			SPEED = 2;
+			//Remove one element from random array and build the logo
+			for (var i=0; i<SPEED; i++)
+			{
+				_ti = imgLogoArray[0];
+				imgLogoArray.splice(0,1);
+				imgLogoUsed.push(_ti);
+
+
+				//Take index off from of logo img array
+				arrTriangle[_ti].attr("opacity",1);
+				arrTriangle[_ti].attr("fill","#fff");
+			
+				arrLogoSet.splice(0,1);
+				console.log("size>" + arrLogoSet.length);
+			}
+
+			if (imgLogoArray.length > 0) {
+				id = setTimeout(drawHomeLoop,LOOP_TIMER);
+			} else {
+				SPINNING = false;
+				drawTitle();
+			}
+
+		};
+
+		function drawGrid()
+		{
+			var line;
+
+			for (var i=0; i<ROWS; i++)
+			{
+				line = paper.path( ["M", 0, SQUARE_SIZE*i, "H", SIZE_W] );		
+				line.attr("stroke", GRID_COLOR);
+			}
+
+			for (var i=-COLS; i<2*COLS; i++)
+			{
+				var line = paper.path( ["M", SQUARE_SIZE*i, 0, "V", SIZE_H] );		
+				line.attr("stroke", GRID_COLOR);
+
+				if ((i%2) == 0) {
+
+					var _xForward = ROWS + i;
+					var _xBack = -ROWS + i;
+					var _y = ROWS;
+
+					//LEFT to RIGHT
+					if (i<COLS) {
+						var line = paper.path( ["M", SQUARE_SIZE*i, 0, "L", _xForward*SQUARE_SIZE, _y*SQUARE_SIZE]);
+						line.attr("stroke", GRID_COLOR);
+					}
+
+					//RIGHT TO LEFT		
+					if (i > 0) {
+						var line = paper.path( ["M", SQUARE_SIZE*i, 0, "L", _xBack*SQUARE_SIZE, _y*SQUARE_SIZE]);
+						line.attr("stroke", GRID_COLOR);
+
+					}
+				}
+			}
+		}
+
+
+/*
+		function initWidgets() {
+
+			drawWidgets(1);
+		}
+
+		function drawWidgets(_init) {
+
+        		console.log(">" + widgetContent.length);
+
+        		for (var i=0; i<widgetContent.length; i++)
+        		{
+
+                		_x = widgetContent[i].locX * SQUARE_SIZE;
+                		_y = widgetContent[i].locY * SQUARE_SIZE;
+
+                		_w = widgetContent[i].sizeX * SQUARE_SIZE;
+                		_h = widgetContent[i].sizeY * SQUARE_SIZE;
+
+        		}
+  		}
+*/
+
+        // <!-- abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-=_+[]{}\|;':",./<>?`~!@#$%^&*() -->
+
+	    var id;
+
+            window.onload = function () {
+
+		// Creates canvas 320 × 200 at 10, 50
+		paper = Raphael(0, 0, SIZE_W, SIZE_H);
+
+
+		//INIT WIDGETS
+		//initWidgets();
+
+		//DRAW LOGO BOX
+		drawHomeBox();
+
+            };
+
+	document.addEventListener('keydown', 
+		function(event) {
+   			console.log("HERE");
+			drawHomeLoop(); 
+		}
+	);
+
+        </script>
+    </head>
+    <body>
+        <div id="holder"></div>
+    </body>
+</html>
+
