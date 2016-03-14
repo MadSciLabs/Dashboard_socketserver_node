@@ -118,9 +118,6 @@
 				})
 				.mouseout(function() {
 
-//console.log("nid>" + this.node.id);
-//console.log("indexof>" + imgLogoUsed.indexOf(parseInt(this.node.id)));
-
 					if (imgLogoUsed.indexOf(parseInt(this.node.id)) >= 0) {
 						this.attr({"opacity":1,"fill":"#fff"});
 					} else {	
@@ -228,22 +225,24 @@
 			for (_i=0; _i<_s; _i++)
 			{
 				_ti = arrLogoSet[_i];
-				_ri = getRandomMatrixIndex();
 
-				if (imgLogoUsed.indexOf(_ti) == -1 && imgLogoUsed.indexOf(_ri) == -1)
+				if (imgLogoUsed.indexOf(_ti) == -1)
 				{
 					arrTriangle[_ti].attr("opacity", 0);
+					_ri = getRandomMatrixIndex();
 
-					if (_i > 1)
+					if (imgLogoUsed.indexOf(_ri) == -1)
 					{
-						arrLogoSet[_i] = _ri;
+						if (_i > 1)
+						{
+							arrLogoSet[_i] = _ri;
+							arrTriangle[_ri].attr("opacity", 1);
+							arrTriangle[_ri].attr("fill", getRandomColor() );
+						}
 
-						arrTriangle[_ri].attr("opacity", 1);
-						arrTriangle[_ri].attr("fill", getRandomColor() );
+					} else {
+						console.log("USED : " + _ti);
 					}
-
-				} else {
-					console.log("USED : " + _ti);
 				}
 			}
 
@@ -267,6 +266,14 @@
 			if (imgLogoArray.length > 0) {
 				id = setTimeout(drawHomeLoop,LOOP_TIMER);
 			} else {
+/*
+				for (i=0; i<arrTriangle.length; i++)
+				{
+					if (imgLogoUsed.indexOf(i) == -1) {
+						arrTriangle[i].attr("opacity",0);
+					}
+				}
+*/
 				SPINNING = false;
 				drawTitle();
 			}
