@@ -110,11 +110,7 @@
 				})
 				.mouseover(function() {
 
-					if (imgLogoUsed.indexOf(parseInt(this.node.id)) >= 0 && SPINNING==false) {
-						drawHomeBox();
-					} else {
-						this.attr({"opacity":1,"fill":getRandomColor()});
-					}
+					this.attr({"opacity":1,"fill":getRandomColor()});
 				})
 				.mouseout(function() {
 
@@ -213,7 +209,12 @@
 				'font-size':30,
 				'text-anchor': 'start'};
 
-			paper.text(SQUARE_SIZE, 1.85*SQUARE_SIZE, "HAVAS\nLAB").attr(_f);	
+			paper.text(SQUARE_SIZE, 1.85*SQUARE_SIZE, "HAVAS\nLAB").attr(_f).mouseover(function() {
+
+					if (SPINNING==false) {
+						drawHomeBox();
+					}
+				});
 		}
 
 		var drawHomeLoop = function() {
