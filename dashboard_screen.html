@@ -1,0 +1,355 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <title>Lab</title>
+
+  	<script src='https://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js'></script>
+
+        <script src="raphael/raphael.js" type="text/javascript" charset="utf-8"></script>
+        <script src="raphael/helvetica.js" type="text/javascript" charset="utf-8"></script>
+
+        <script type="text/javascript" charset="utf-8">
+
+		var SQUARE_SIZE = 40;
+
+		var ROWS_LOGO = 7; //20;
+		var COLS_LOGO = 11; //30;
+
+		var ROWS_SCREEN = 20;
+		var COLS_SCREEN = 20;
+
+		var LOOP_TIMER  = 200;
+		var NUM_RANDOMS = 20;
+
+		var SPINNING = false;
+
+		var GRID_COLOR = "#676668";
+
+		var arrTriangle = [];
+		var arrLogoSet = [];
+
+		//Paper Object
+		var paperHomeBox;
+		var paperScreen;
+
+	</script>
+
+	<script src="dashboard.grid.js"></script>
+  	<script src="dashboard.images.js"></script>
+
+
+        <style type="text/css" media="screen">
+            #keycatcher {
+                position: absolute;
+                top: -9999em;
+                left: -9999em;
+            }
+            p {
+                text-align: center;
+            }
+        </style>
+
+        <script type="text/javascript" charset="utf-8">
+
+
+		var drawScreen = function() {
+
+			//DRAW SCREEN
+			var box2 = paperScreen.rect(0,0,SQUARE_SIZE*COLS_SCREEN,SQUARE_SIZE*ROWS_SCREEN);
+			box2.attr("fill", "#515052");
+
+			//DRAW GRID
+			drawGrid(paperScreen,ROWS_SCREEN,COLS_SCREEN);
+
+                        //Draw All Triangles
+                        for (i=0; i<ROWS_SCREEN; i++) {
+                                for (j=0; j<COLS_SCREEN*2; j++) {
+
+                                        //Get the single index for this in the Matrix
+                                        _i = getMatrixIndex(j,i,COLS_SCREEN);
+                                        _c=1;
+
+										console.log("triangle");
+
+                                        //Push triangle objects
+                                        arrTriangle.push(
+                                                //drawTriangle(j,i,"#ff0000",_c,_i)
+                                                drawTriangle(paperScreen,j,i,getRandomColor(),_c,_i)
+                                        );
+
+                                }
+                        }
+
+                        //id = setTimeout(screenLoop,LOOP_TIMER);
+		}
+
+		var screenLoop = function() {
+
+			console.log("screen loop");
+
+			for (i=0; i<arrTriangle.length; i++)
+			{
+				arrTriangle[i].attr("fill", getRandomColor());
+			}
+
+			id = setTimeout(screenLoop,LOOP_TIMER);
+
+		}
+
+		var drawFrame = function(_f) {
+
+			console.log("frame loop");
+
+			if (_f.length == arrTriangle.length)
+			{
+			
+				for (i=0; i<_f.length; i++)
+				{
+					_c = getColor(parseInt(_f.charAt(i)));
+
+					if (_c == "none")
+					{
+						//console.log("h");
+						//arrTriangle[i].attr("opacity", 0);
+						arrTriangle[i].attr("fill",_c);
+					}
+					else
+					{
+						//arrTriangle[i].attr("opacity", 1);
+						arrTriangle[i].attr("fill",_c);
+					}
+				}
+			}
+
+		}
+
+		var drawHomeBox = function() {
+
+			arrTriangle = [];
+			arrLogoSet = [];
+
+			setLogoArray();
+
+			paperHomeBox.clear();
+			SPINNING = true;
+
+			//DRAW SPACES
+			var box = paperHomeBox.rect(0,0,SQUARE_SIZE*COLS,SQUARE_SIZE*ROWS);
+			box.attr("fill", "#474547");
+
+			//Get 28 random triangles
+			for (i=0; i<NUM_RANDOMS; i++)
+			{
+				arrLogoSet.push(getRandomMatrixIndex());
+			}
+
+			//DRAW GRID
+			drawGrid(paperHomeBox,ROWS,COLS);
+
+			//Draw All Triangles
+			for (i=0; i<ROWS; i++) {
+				for (j=0; j<COLS*2; j++) {
+
+					//Get the single index for this in the Matrix
+					_i = getMatrixIndex(j,i);
+
+					if (arrLogoSet.indexOf(_i)>=0) { _c=1;}
+					else { _c=0;}
+
+					//Push triangle objects
+					arrTriangle.push(
+						drawTriangle(j,i,getRandomColor(),_c,_i)
+					);
+
+				}
+			}
+
+			drawTitle();
+
+			drawHomeLoop();
+		}
+
+		var drawTitle = function() {
+
+			_f = {
+				'fill':'#fff', 
+				'font-family':'BsMonofaked', 
+				'font-size':30,
+				'text-anchor': 'start'};
+
+			paperHomeBox.text(SQUARE_SIZE, 1.85*SQUARE_SIZE, "HAVAS\nLAB").attr(_f).mouseover(function() {
+
+					if (SPINNING==false) {
+						drawHomeBox();
+					}
+				});
+		}
+
+		var drawHomeLoop = function() {
+
+			//paper.clear();
+			var _t, _i;
+
+			//For each of the 24 locations
+			_s = arrLogoSet.length;
+
+			for (_i=0; _i<_s; _i++)
+			{
+				_ti = arrLogoSet[_i];
+
+				if (imgLogoUsed.indexOf(_ti) == -1)
+				{
+					arrTriangle[_ti].attr("opacity", 0);
+					_ri = getRandomMatrixIndex();
+
+					if (imgLogoUsed.indexOf(_ri) == -1)
+					{
+						if (_i > 1)
+						{
+							arrLogoSet[_i] = _ri;
+							arrTriangle[_ri].attr("opacity", 1);
+							arrTriangle[_ri].attr("fill", getRandomColor() );
+						}
+
+					} else {
+						console.log("USED : " + _ti);
+					}
+				}
+			}
+
+			SPEED = 2;
+			//Remove one element from random array and build the logo
+			for (var i=0; i<SPEED; i++)
+			{
+				_ti = imgLogoArray[0];
+				imgLogoArray.splice(0,1);
+				imgLogoUsed.push(_ti);
+
+
+				//Take index off from of logo img array
+				arrTriangle[_ti].attr("opacity",1);
+				arrTriangle[_ti].attr("fill","#fff");
+			
+				arrLogoSet.splice(0,1);
+				console.log("size>" + arrLogoSet.length);
+			}
+
+			if (imgLogoArray.length > 0) {
+				id = setTimeout(drawHomeLoop,LOOP_TIMER);
+			} else {
+/*
+				for (i=0; i<arrTriangle.length; i++)
+				{
+					if (imgLogoUsed.indexOf(i) == -1) {
+						arrTriangle[i].attr("opacity",0);
+					}
+				}
+*/
+				SPINNING = false;
+			}
+
+		};
+
+
+
+
+/*
+		function initWidgets() {
+
+			drawWidgets(1);
+		}
+
+		function drawWidgets(_init) {
+
+        		console.log(">" + widgetContent.length);
+
+        		for (var i=0; i<widgetContent.length; i++)
+        		{
+
+                		_x = widgetContent[i].locX * SQUARE_SIZE;
+                		_y = widgetContent[i].locY * SQUARE_SIZE;
+
+                		_w = widgetContent[i].sizeX * SQUARE_SIZE;
+                		_h = widgetContent[i].sizeY * SQUARE_SIZE;
+
+        		}
+  		}
+*/
+
+        // <!-- abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-=_+[]{}\|;':",./<>?`~!@#$%^&*() -->
+
+	    var id;
+
+            window.onload = function () {
+
+		// Creates canvas 320 × 200 at 10, 50
+		//paperHomeBox = Raphael(0, 0, SQUARE_SIZE*COLS, SQUARE_SIZE*ROWS);
+		paperScreen = Raphael(0,0, SQUARE_SIZE*COLS_SCREEN, SQUARE_SIZE*ROWS_SCREEN);
+		
+
+		//INIT WIDGETS
+		//initWidgets();
+
+		//DRAW LOGO BOX
+		//drawHomeBox();
+
+		//DRAW SCREEN
+		drawScreen();
+
+		//START WEB SOCKETS
+		WebSocketTest()
+
+            };
+
+	document.addEventListener('keydown', 
+		function(event) {
+   			console.log("HERE");
+			drawHomeLoop(); 
+		}
+	);
+
+function WebSocketTest()
+         {
+            if ("WebSocket" in window)
+            {
+               console.log("WebSocket is supported by your Browser!");
+               
+               // Let us open a web socket
+               var ws = new WebSocket("ws://localhost:3006/echo");
+				
+               ws.onopen = function()
+               {
+                  // Web Socket is connected, send data using send()
+                  //ws.send("Message to send");
+                  console.log("Message is sent...");
+               };
+				
+               ws.onmessage = function (evt) 
+               { 
+                  var received_msg = evt.data;
+                  console.log("Message is received : " + received_msg);
+                  drawFrame(received_msg);
+               };
+				
+               ws.onclose = function()
+               { 
+                  // websocket is closed.
+                  console.log("Connection is closed..."); 
+               };
+            }
+            
+            else
+            {
+               // The browser doesn't support WebSocket
+               console.log("WebSocket NOT supported by your Browser!");
+            }
+         }
+
+        </script>
+    </head>
+    <body>
+        <div id="holder"></div>
+    </body>
+</html>
+

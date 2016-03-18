@@ -2,18 +2,18 @@
  * LOGO
  */
 
-var getRandomMatrixIndex = function() {
+var getRandomMatrixIndex = function(_COLS,_ROWS) {
 
-                        _x = Math.floor(Math.random()*COLS*2);
-                        _y = Math.floor(Math.random()*ROWS);
+                        _x = Math.floor(Math.random()*_COLS*2);
+                        _y = Math.floor(Math.random()*_ROWS);
                         _i = _y*COLS*2 + _x;
 
                         return _i;
 }
 
-var getMatrixIndex = function(_x, _y) {
+var getMatrixIndex = function(_x, _y, _COLS) {
 
-                        _i = _y*COLS*2 + _x;
+                        _i = _y*_COLS*2 + _x;
 
                         return _i;
 }
@@ -77,11 +77,17 @@ function setLogoArray() {
 	shuffle(imgLogoArray);
 }
 
-var imgLogo = MultiDimensionalArray(7,24);
+var imgLogo = MultiDimensionalArray(ROWS_SCREEN,COLS_SCREEN*2);
 var imgLogoArray= new Array();
 var imgLogoUsed = new Array();
 
 imgLogo[4] = [0,0,1,1,1,1,1,1,0,0,1,1,1,1,0,0,1,0,0,0,0,0];
 imgLogo[5] = [0,0,1,1,1,1,1,1,0,0,1,1,1,1,0,0,1,1,1,0,0,0];
 
+/*
+imgLogo[7] = [0,0,1,1,1,1,1,1,0,0,0,0,0,0,0,0];
+imgLogo[8] = [0,0,1,1,1,1,1,1,0,0,0,0,0,0,0,0];
 
+imgLogo[4] = [0,0,1,1,1,1,0,0,1,0,0,0,0,0];
+imgLogo[5] = [0,0,1,1,1,1,0,0,1,1,1,0,0,0];
+*/
