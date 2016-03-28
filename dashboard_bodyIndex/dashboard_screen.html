@@ -1,0 +1,379 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <title>Lab</title>
+
+  	<script src='https://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js'></script>
+
+        <script src="raphael/raphael.js" type="text/javascript" charset="utf-8"></script>
+        <script src="raphael/helvetica.js" type="text/javascript" charset="utf-8"></script>
+
+		<script src="/socket.io/socket.io.js"></script>
+
+        <script type="text/javascript" charset="utf-8">
+
+		var SQUARE_SIZE = 20;
+
+		var ROWS_LOGO = 7; //20;
+		var COLS_LOGO = 11; //30;
+
+		var ROWS_SCREEN; // = 45;
+		var COLS_SCREEN; // = 80;
+
+		var LOOP_TIMER  = 200;
+		var NUM_RANDOMS = 20;
+
+		var SPINNING = false;
+
+		var GRID_COLOR = "#676668";
+
+		var arrTriangle = [];
+		var arrLogoSet = [];
+
+		//Paper Object
+		var paperHomeBox;
+		var paperScreen;
+
+	</script>
+
+	<script src="dashboard.grid.js"></script>
+  	<script src="dashboard.images.js"></script>
+
+
+        <style type="text/css" media="screen">
+            #keycatcher {
+                position: absolute;
+                top: -9999em;
+                left: -9999em;
+            }
+            p {
+                text-align: center;
+            }
+
+            body {
+            	overflow:hidden;
+            }
+        </style>
+
+        <script type="text/javascript" charset="utf-8">
+
+
+		var drawScreen = function() {
+
+			//console.log( $(window).width() + "," + $(window).height() );
+
+			//SET THE WIDTH/HEIGHT
+			//ROWS_SCREEN = 45; //parseInt($(window).height() / SQUARE_SIZE);
+			//COLS_SCREEN = 80; //parseInt($(window).width() / SQUARE_SIZE);
+			
+
+
+			//DRAW SCREEN
+			var box2 = paperScreen.rect(0,0,SQUARE_SIZE*COLS_SCREEN,SQUARE_SIZE*ROWS_SCREEN);
+			box2.attr("fill", "#515052");
+
+			console.log("screen : " + (SQUARE_SIZE*COLS_SCREEN) + "," + (SQUARE_SIZE*ROWS_SCREEN));
+
+			//DRAW GRID
+			drawGrid(paperScreen,ROWS_SCREEN,COLS_SCREEN);
+
+                        //Draw All Triangles
+                        for (i=0; i<ROWS_SCREEN; i++) {
+                                for (j=0; j<COLS_SCREEN*2; j++) {
+
+                                        //Get the single index for this in the Matrix
+                                        _i = getMatrixIndex(j,i,COLS_SCREEN);
+                                        _c=1;
+
+                                        //Push triangle objects
+                                        arrTriangle.push(
+                                                //drawTriangle(j,i,"#ff0000",_c,_i)
+                                                //drawTriangle(paperScreen,j,i,getRandomColor(),_c,_i)
+                                                drawTriangle(paperScreen,j,i,"none",_c,_i)
+                                        );
+                                }
+                        }
+
+                        console.log("Triangle Array : " + ROWS_SCREEN + " " + COLS_SCREEN + " " + arrTriangle.length);
+                        //id = setTimeout(screenLoop,LOOP_TIMER);
+		}
+
+		var screenLoop = function() {
+
+			console.log("screen loop");
+
+			for (i=0; i<arrTriangle.length; i++)
+			{
+				arrTriangle[i].attr("fill", getRandomColor());
+			}
+
+			id = setTimeout(screenLoop,LOOP_TIMER);
+
+		}
+
+		/*
+		var drawFrame = function(_f) {
+
+			console.log("frame loop");
+
+			if (_f.length == arrTriangle.length)
+			{
+			
+				for (i=0; i<_f.length; i++)
+				{
+					_c = getColor(parseInt(_f.charAt(i)));
+
+					if (_c == "none")
+					{
+						//console.log("h");
+						//arrTriangle[i].attr("opacity", 0);
+						arrTriangle[i].attr("fill",_c);
+					}
+					else
+					{
+						//arrTriangle[i].attr("opacity", 1);
+						arrTriangle[i].attr("fill",_c);
+					}
+				}
+			}
+
+		}
+		*/
+
+		/*
+		var drawHomeBox = function() {
+
+			arrTriangle = [];
+			arrLogoSet = [];
+
+			setLogoArray();
+
+			paperHomeBox.clear();
+			SPINNING = true;
+
+			//DRAW SPACES
+			var box = paperHomeBox.rect(0,0,SQUARE_SIZE*COLS,SQUARE_SIZE*ROWS);
+			box.attr("fill", "#474547");
+
+			//Get 28 random triangles
+			for (i=0; i<NUM_RANDOMS; i++)
+			{
+				arrLogoSet.push(getRandomMatrixIndex());
+			}
+
+			//DRAW GRID
+			drawGrid(paperHomeBox,ROWS,COLS);
+
+			//Draw All Triangles
+			for (i=0; i<ROWS; i++) {
+				for (j=0; j<COLS*2; j++) {
+
+					//Get the single index for this in the Matrix
+					_i = getMatrixIndex(j,i);
+
+					if (arrLogoSet.indexOf(_i)>=0) { _c=1;}
+					else { _c=0;}
+
+					//Push triangle objects
+					arrTriangle.push(
+						drawTriangle(j,i,getRandomColor(),_c,_i)
+					);
+
+				}
+			}
+
+			drawTitle();
+
+			//drawHomeLoop();
+		}
+
+		var drawTitle = function() {
+
+			_f = {
+				'fill':'#fff', 
+				'font-family':'BsMonofaked', 
+				'font-size':30,
+				'text-anchor': 'start'};
+
+			paperHomeBox.text(SQUARE_SIZE, 1.85*SQUARE_SIZE, "HAVAS\nLAB").attr(_f).mouseover(function() {
+
+					if (SPINNING==false) {
+						drawHomeBox();
+					}
+				});
+		}
+		*/
+
+
+        // <!-- abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-=_+[]{}\|;':",./<>?`~!@#$%^&*() -->
+
+	    var id;
+
+
+        window.onload = function () {
+
+        	COLS_SCREEN = 80;
+        	SQUARE_SIZE = parseInt($(window).width() / 80) + 1;
+
+			//SET THE WIDTH/HEIGHT
+			ROWS_SCREEN = parseInt($(window).height() / SQUARE_SIZE) + 1;
+			if (ROWS_SCREEN < 45) {
+				ROWS_SCREEN = 45;
+			}
+
+alert($(document).height() + "," + $(document).width() + "," + COLS_SCREEN + ", " + ROWS_SCREEN);
+
+console.log($(window).width() + "," + $(window).height() + "," + COLS_SCREEN + "," + ROWS_SCREEN)
+
+		// Creates canvas 320 × 200 at 10, 50
+		//paperHomeBox = Raphael(0, 0, SQUARE_SIZE*COLS, SQUARE_SIZE*ROWS);
+		paperScreen = Raphael(0,0, SQUARE_SIZE*COLS_SCREEN, SQUARE_SIZE*ROWS_SCREEN);
+		
+
+		//INIT WIDGETS
+		//initWidgets();
+
+		//DRAW LOGO BOX
+		//drawHomeBox();
+
+		//DRAW SCREEN
+		drawScreen();
+
+		//START WEB SOCKETS
+		//WebSocketTest()
+
+		/*********************
+			ALL THE OTHER STUFF
+		*************************/
+		var socket = io.connect('/');
+		var canvas = document.getElementById('bodyCanvas');
+		var ctx = canvas.getContext('2d');
+
+		var colorProcessing = false;
+		var colorWorkerThread = new Worker("js/colorWorker.js");
+
+		var _range = (255 - 120) / 255;
+		
+		
+		colorWorkerThread.addEventListener("message", function (event) {
+
+			if(event.data.message === 'imageReady') {
+
+				//console.log("data : " + event.data.imageData.data.length);
+
+                //ctx.putImageData(event.data.imageData, 0, 0);
+
+                for (i=0; i<3600; i++)
+                //for (i=0; i<event.data.imageData.data.length; i++)
+				{
+					//console.log(event.data.imageData.data[i]);
+
+//console.log(parseInt(event.data.imageData.data.length));
+
+					if (event.data.imageData.data[i] == "0") { 
+					//if (parseInt(event.data.imageData.data[i]) < 10) { 
+
+//console.log("H")
+						_s = "#fff";
+						_s2 = _s;
+						arrTriangle[2*i].attr("opacity", 0);
+						arrTriangle[2*i+1].attr("opacity", 0);
+					} 
+					else 
+					{ 
+						//_l = 150 + parseInt(parseFloat(event.data.imageData.data[i]) * _range);
+						//_s = _l.toString(16) + _l.toString(16) + _l.toString(16);
+						//_s ="#" + _s;
+
+						_s = getRandomColor();
+						_s2 = getRandomColor();
+
+						arrTriangle[2*i].attr("opacity", 255);
+						arrTriangle[2*i+1].attr("opacity", 255);
+					}
+
+					arrTriangle[2*i].attr("fill",_s);
+					arrTriangle[2*i+1].attr("fill",_s2);
+					//arrTriangle[i].attr("fill","#" + event.data.imageData.data[i].toString(16));
+				}
+
+                colorProcessing = false;
+			}
+		});
+		
+
+		colorWorkerThread.postMessage({
+			"message": "setImageData",
+			"imageData": ctx.createImageData(canvas.width, canvas.height)
+		});
+
+		socket.on('compGrayFrame', function(imageBuffer){
+
+			//console.log("Buffer Length : " + imageBuffer.length);
+
+			if(!colorProcessing) {
+				colorProcessing = true;
+
+				colorWorkerThread.postMessage({ "message": "processImageData", "imageBuffer": imageBuffer });
+			}
+		});
+
+            };
+
+	document.addEventListener('keyup', 
+		function(event) {
+   			console.log("HERE");
+   			location.reload();
+		}
+	);
+
+
+
+/*
+function WebSocketTest()
+         {
+            if ("WebSocket" in window)
+            {
+               console.log("WebSocket is supported by your Browser!");
+               
+               // Let us open a web socket
+               var ws = new WebSocket("ws://localhost:3006/echo");
+				
+               ws.onopen = function()
+               {
+                  // Web Socket is connected, send data using send()
+                  //ws.send("Message to send");
+                  console.log("Message is sent...");
+               };
+				
+               ws.onmessage = function (evt) 
+               { 
+                  var received_msg = evt.data;
+                  console.log("Message is received : " + received_msg);
+                  drawFrame(received_msg);
+               };
+				
+               ws.onclose = function()
+               { 
+                  // websocket is closed.
+                  console.log("Connection is closed..."); 
+               };
+            }
+            
+            else
+            {
+               // The browser doesn't support WebSocket
+               console.log("WebSocket NOT supported by your Browser!");
+            }
+         }
+*/
+
+        </script>
+    </head>
+    <body>
+    	<canvas id="bodyCanvas"></canvas>
+        <div id="holder"></div>
+    </body>
+</html>
+
