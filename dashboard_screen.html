@@ -9,15 +9,17 @@
         <script src="raphael/raphael.js" type="text/javascript" charset="utf-8"></script>
         <script src="raphael/helvetica.js" type="text/javascript" charset="utf-8"></script>
 
+		<script src="/socket.io/socket.io.js"></script>
+
         <script type="text/javascript" charset="utf-8">
 
-		var SQUARE_SIZE = 40;
+		var SQUARE_SIZE = 20;
 
 		var ROWS_LOGO = 7; //20;
 		var COLS_LOGO = 11; //30;
 
-		var ROWS_SCREEN = 20;
-		var COLS_SCREEN = 20;
+		var ROWS_SCREEN = 45;
+		var COLS_SCREEN = 80;
 
 		var LOOP_TIMER  = 200;
 		var NUM_RANDOMS = 20;
@@ -298,7 +300,41 @@
 		drawScreen();
 
 		//START WEB SOCKETS
-		WebSocketTest()
+		//WebSocketTest()
+
+		/*********************
+			ALL THE OTHER STUFF
+		*************************/
+		var socket = io.connect('/');
+		console.log("here");
+		var canvas = document.getElementById('bodyCanvas');
+		var ctx = canvas.getContext('2d');
+
+
+		var colorProcessing = false;
+		var colorWorkerThread = new Worker("js/colorWorker.js");
+		
+		/*
+		colorWorkerThread.addEventListener("message", function (event) {
+			if(event.data.message === 'imageReady') {
+                ctx.putImageData(event.data.imageData, 0, 0);
+                colorProcessing = false;
+			}
+		});
+		*/
+
+		colorWorkerThread.postMessage({
+			"message": "setImageData",
+			"imageData": ctx.createImageData(canvas.width, canvas.height)
+		});
+
+		socket.on('compGrayFrame', function(imageBuffer){
+
+			if(!colorProcessing) {
+				colorProcessing = true;
+				colorWorkerThread.postMessage({ "message": "processImageData", "imageBuffer": imageBuffer });
+			}
+		});
 
             };
 
@@ -309,6 +345,9 @@
 		}
 	);
 
+
+
+/*
 function WebSocketTest()
          {
             if ("WebSocket" in window)
@@ -345,10 +384,12 @@ function WebSocketTest()
                console.log("WebSocket NOT supported by your Browser!");
             }
          }
+*/
 
         </script>
     </head>
     <body>
+    	<canvas id="bodyCanvas"></canvas>
         <div id="holder"></div>
     </body>
 </html>
