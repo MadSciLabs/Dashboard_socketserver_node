@@ -168,6 +168,8 @@ $(document).ready(function(){
 
     var videoIndex = 0;
 
+    var arrVideoIndex = [];
+
     // Listen for messages from the player
     if (window.addEventListener) {
         window.addEventListener('message', onMessageReceived, false);
@@ -233,7 +235,7 @@ $(document).ready(function(){
     function changeVideo(_vID) {
 
         new_id = arrProjects[_vID].id;
-    
+
 	//Set Information	
 	console.log(arrProjects[_vID].name);
 	$("#infoTitle").text(arrProjects[_vID].name);
@@ -246,13 +248,12 @@ $(document).ready(function(){
 
     function nextVideo() {
 
+	changeVideo(arrVideoIndex[videoIndex]);
+
 	videoIndex++;
 	if (videoIndex >= arrProjects.length) {
 		videoIndex = 0;
 	}
-
-	changeVideo(videoIndex);
-
     }
 
     function onFinish() {
@@ -304,12 +305,32 @@ $(document).ready(function(){
 	$("#infoTitle").css('padding',_padding);
     	$("#infoBody").css('padding',_padding);
 
-	changeVideo(0);
+	//Set index array
+	arrVideoIndex = setIndexArray(arrProjects.length);
+
+	//Start Videos
+	nextVideo();
 
 	//$("#player1").show();
 	//$("#player2").hide();
     }
 
+    function setIndexArray(_len)
+    {
+
+	var arr = []
+	while(arr.length < _len){
+  		var randomnumber=Math.ceil(Math.random() * _len)-1
+  		var found=false;
+  		for(var i=0;i<arr.length;i++){
+			if(arr[i]==randomnumber){found=true;break}
+  		}
+  		if(!found)arr[arr.length]=randomnumber;
+	}
+
+	//document.write("Array: " + arr)
+	return arr;
+   }
 
    //INIT
    init();
