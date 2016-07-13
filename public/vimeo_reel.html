@@ -1,0 +1,335 @@
+<html>
+
+<head>
+
+<style>
+
+	body {padding:0; margin:0; font-family:arial,helvetica,clean,terminal,sans-serif; font-size:9px; line-height:13px; color:#666666;border:0px;}
+
+	font-family: "BsMonofaked";
+
+	a {color:#33cc00;text-decoration:none}
+	a:hover {background:#33cc00;color:#ffffff;}
+
+	#info {
+		position:absolute;
+		background:rgba(0,221,0,.7);
+		z-index:2;
+	}
+
+	#infoTitle {
+		color:rgba(255,255,255,.8);
+		line-height: 100%;
+	}
+
+	#infoBody {
+		color:rgba(255,255,255,.8);
+		line-height: 100%;
+	}
+
+</style>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+
+<script language="javascript">
+
+var arrProjects = [
+	{
+		'id': '172156968',
+		'name': 'Lab Robot',
+		'desc': 'Drive train test'
+	},
+	{
+        	'id': '171874610',
+        	'name': 'MET Museum Drawing Arm',
+        	'desc': 'Test of Lab designed pen head for the MET Media Lab'
+        },
+	{
+        	'id': '171019779',
+        	'name': 'Post-It Note Animation',
+        	'desc': 'A prototype created in partnership with Arnold Creative Tech Team'
+        },
+	{
+        	'id': '170038034',
+        	'name': 'Lab Robot',
+        	'desc': 'Motor test'
+        },
+	{
+        	'id': '162883919',
+        	'name': 'Line Morphing',
+        	'desc': 'SVG line morping prototype'
+        },
+	{
+        	'id': '166225206',
+        	'name': 'Hershey\'s Chocolate CNC',
+        	'desc': 'Research to create personalized chocolate bars'
+        },
+	{
+        	'id': '162589654',
+        	'name': 'Polargraph Drawing Machine',
+        	'desc': 'Lab designed Polargraph drawing robot'
+        },
+	{
+        	'id': '154761160',
+        	'name': 'Cube Prototype',
+        	'desc': 'An interactive IOT project'
+        },
+	{
+        	'id': '153000153',
+        	'name': 'House of Walker Tasting Table',
+        	'desc': 'Interactive whiskey tasting table setup in Austin, TX'
+        },
+	{
+        	'id': '147596799',
+        	'name': '3D Scanner',
+        	'desc': 'A 3D Scanner using the Microsoft Kinect camera'
+        },
+	{
+        	'id': '147372334',
+        	'name': '3D Scanner',
+        	'desc': 'A 3D Scanner using the Microsoft Kinect camera'
+        },
+	{
+        	'id': '147372260',
+        	'name': '3D Scanner',
+        	'desc': 'A 3D Scanner using the Microsoft Kinect camera'
+        },
+	{
+        	'id': '132460154',
+        	'name': 'KY \'Sound of Touch\' research',
+        	'desc': 'R&D of human touch sound synthesis'
+        },
+	{
+        	'id': '132459883',
+        	'name': 'KY \'Sound of Touch\' research',
+        	'desc': 'R&D of human touch sound synthesis'
+        },
+	{
+        	'id': '130109050',
+        	'name': 'Lab Demo Reel 2014',
+        	'desc': 'Collection of Lab projects and experiments'
+        },
+	{
+        	'id': '127504129',
+        	'name': '3D Print',
+        	'desc': '22 Hour 3D print from scanned model'
+        },
+	{
+        	'id': '124239353',
+        	'name': 'Periscope + Drones',
+        	'desc': 'A Periscope feed from the Lab drone'
+        },
+	{
+        	'id': '98475856',
+        	'name': 'Tactonics Pressure Sensing Surface Demo',
+        	'desc': 'Drum pad demonstration using Tactonics Pressure Sensing Surface'
+        },
+	{
+        	'id': '95323549',
+        	'name': 'Google Glass + Web Sockets',
+        	'desc': 'Demonstration of interfacing Google Glass and hardware'
+        },
+	{
+        	'id': '80469507',
+        	'name': 'Wherever Ships may Sail',
+        	'desc': 'Gestural storytelling with Johnnie Walker'
+        },
+	{
+        	'id': '70003261',
+        	'name': 'NYC Perceptual Hackathon',
+        	'desc': 'MadSci LAB and Intel partnered to organize NYC\'s first Perceptual Hackathon.'
+        },
+	{
+        	'id': '66421763',
+        	'name': 'Remote Presence Experiments',
+        	'desc': 'The Madsci "Remote Presence" platform is a Lab research project to explore quick, inexpensive, and easy deploying of remote-controlled interactions.'
+        },
+	{
+        	'id': '61688051',
+        	'name': 'Beats Space 3D',
+        	'desc': 'Beats Space 3D is a gestural and spatial drumkit using the Leap and 3D stereoscopic visuals.'
+        },
+	{
+        	'id': '57152546',
+        	'name': 'Intel\'s Perceptual Computing SDK',
+        	'desc': 'Using Intel\'s Perceptual Computing SDK hand and finger tracking features to control an audio synthesizer.'
+        }
+];
+
+
+$(document).ready(function(){
+
+    var player = $('iframe');
+    var playerOrigin = '*';
+    var status = $('.status');
+
+    var _width = 1920*1;
+    var _height = 1080*1;
+
+    var videoIndex = 0;
+
+    // Listen for messages from the player
+    if (window.addEventListener) {
+        window.addEventListener('message', onMessageReceived, false);
+    }
+    else {
+        window.attachEvent('onmessage', onMessageReceived, false);
+    }
+
+    // Handle messages received from the player
+    function onMessageReceived(event) {
+        // Handle messages from the vimeo player only
+        if (!(/^https?:\/\/player.vimeo.com/).test(event.origin)) {
+            return false;
+        }
+        
+        if (playerOrigin === '*') {
+            playerOrigin = event.origin;
+        }
+        
+        var data = JSON.parse(event.data);
+        
+        switch (data.event) {
+            case 'ready':
+                onReady();
+                break;
+               
+            case 'pause':
+                onPause();
+                break;
+               
+            case 'finish':
+                onFinish();
+                break;
+        }
+    }
+
+    // Helper function for sending a message to the player
+    function post(action, value) {
+        var data = {
+          method: action
+        };
+        
+        if (value) {
+            data.value = value;
+        }
+        
+        var message = JSON.stringify(data);
+        player[0].contentWindow.postMessage(message, playerOrigin);
+    }
+
+    function onReady() {
+        status.text('ready');
+        
+        post('addEventListener', 'pause');
+        post('addEventListener', 'finish');
+    
+    }
+
+    function onPause() {
+
+    }
+
+    function changeVideo(_vID) {
+
+        new_id = arrProjects[_vID].id;
+    
+	//Set Information	
+	console.log(arrProjects[_vID].name);
+	$("#infoTitle").text(arrProjects[_vID].name);
+    	$("#infoBody").text(arrProjects[_vID].desc);
+
+    	var loc = "http://player.vimeo.com/video/" + new_id + "?autoplay=1";
+    	var iframe = $('#player1');
+    	$(iframe).attr('src', loc);
+    }
+
+    function nextVideo() {
+
+	videoIndex++;
+	if (videoIndex >= arrProjects.length) {
+		videoIndex = 0;
+	}
+
+	changeVideo(videoIndex);
+
+    }
+
+    function onFinish() {
+
+        status.text('finished');
+
+	//$("#player2").show();
+	//$("#player1").hide();
+
+	nextVideo();
+    }
+
+    function init() {
+
+	console.log(arrProjects.length);
+	console.log(arrProjects[0].id);
+
+    	//var iframe = $('#player1');
+
+    	$("#player1").attr('width', _width);
+    	$("#player1").attr('height', _height);
+
+    	//$("#player2").attr('width', _width);
+    	//$("#player2").attr('height', _height);
+
+	var _top = _height * .65;
+	var _left = _width * .05;
+
+	console.log(_top);
+	console.log(_left);
+
+    	$("#info").css('top', _top + "px");
+    	$("#info").css('left', _left + "px");
+
+	var _infoHeight = _height * .28;
+	var _infoWidth = _width * .38;
+
+    	$("#info").width(_infoWidth);
+    	$("#info").height(_infoHeight);
+
+	var _fontTitle = _width * .04;
+	var _fontBody = _height * .04;
+
+    	$("#infoTitle").css('font-size',_fontTitle);
+    	$("#infoBody").css('font-size',_fontBody);
+
+	var _padding = _height * .01;
+    	
+	$("#infoTitle").css('padding',_padding);
+    	$("#infoBody").css('padding',_padding);
+
+	changeVideo(0);
+
+	//$("#player1").show();
+	//$("#player2").hide();
+    }
+
+
+   //INIT
+   init();
+
+});
+</script>
+</head>
+
+<body>
+<div style="position:relative">
+
+	<div style="position:absolute">
+		<iframe id="player1" src="https://player.vimeo.com/video/166225206?api=1&player_id=player1&autoplay=1" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+	</div>
+
+	<div id="info" style="position:absolute">
+	<div id="infoTitle"></div>
+	<div id="infoBody"></div>
+	</div>
+
+</div>
+</body>
+</html>
