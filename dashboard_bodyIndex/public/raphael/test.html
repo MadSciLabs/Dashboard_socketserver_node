@@ -1,0 +1,178 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <title>Raphaël · Dancing Helvetica</title>
+
+        <link rel="stylesheet" href="demo.css" type="text/css" media="screen">
+        <link rel="stylesheet" href="demo-print.css" type="text/css" media="print">
+
+  	<script src='https://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js'></script>
+
+        <script src="raphael.js" type="text/javascript" charset="utf-8"></script>
+        <script src="helvetica.js" type="text/javascript" charset="utf-8"></script>
+
+  	<script src="dashboard.widgets.js"></script>
+  	<script src="dashboard.content.js"></script>
+
+        <style type="text/css" media="screen">
+            #keycatcher {
+                position: absolute;
+                top: -9999em;
+                left: -9999em;
+            }
+            p {
+                text-align: center;
+            }
+        </style>
+
+        <script type="text/javascript" charset="utf-8">
+
+		var SQUARE_SIZE = 38;
+		var ROWS = 20;
+		var COLS = 30;
+
+		var SIZE_W = SQUARE_SIZE * COLS;
+		var SIZE_H = SQUARE_SIZE * ROWS;
+
+		//Paper Object
+		var paper;
+
+		//Widget Content
+
+		function drawGrid()
+		{
+			var line;
+
+			for (var i=0; i<ROWS; i++)
+			{
+				line = paper.path( ["M", 0, SQUARE_SIZE*i, "H", SIZE_W] );		
+				line.attr("stroke", "#fff");
+			}
+
+			for (var i=-COLS; i<2*COLS; i++)
+			{
+				var line = paper.path( ["M", SQUARE_SIZE*i, 0, "V", SIZE_H] );		
+				line.attr("stroke", "#fff");
+
+				if ((i%2) == 0) {
+
+					var _xForward = ROWS + i;
+					var _xBack = -ROWS + i;
+					var _y = ROWS;
+
+					//LEFT to RIGHT
+					if (i<COLS) {
+						var line = paper.path( ["M", SQUARE_SIZE*i, 0, "L", _xForward*SQUARE_SIZE, _y*SQUARE_SIZE]);
+						line.attr("stroke", "#fff");
+					}
+
+					//RIGHT TO LEFT		
+					if (i > 0) {
+						var line = paper.path( ["M", SQUARE_SIZE*i, 0, "L", _xBack*SQUARE_SIZE, _y*SQUARE_SIZE]);
+						line.attr("stroke", "#fff");
+
+					}
+				}
+			}
+		}
+
+
+		function initWidgets() {
+
+			drawWidgets(1);
+		}
+
+		function drawWidgets(_init) {
+
+        		console.log(">" + widgetContent.length);
+
+        		for (var i=0; i<widgetContent.length; i++)
+        		{
+
+                		_x = widgetContent[i].locX * UNIT_SIZE_WIDTH;
+                		_y = widgetContent[i].locY * UNIT_SIZE_HEIGHT;
+
+                		_w = widgetContent[i].sizeX * UNIT_SIZE_WIDTH;
+                		_h = widgetContent[i].sizeY * UNIT_SIZE_HEIGHT;
+
+/*
+                		$("#main").append("<div style=\"position:absolute\" id=\"" + widgetContent[i].name + "\"></div>");
+
+                		//if name exists
+                		if (widgetContent[i].name != "lab") {
+                        		$("#" + widgetContent[i].name).append("<div class=\"titleSmallWhite\">" + widgetContent[i].title + "<br>-" + "</div>");
+                		}
+
+                		//if Data
+                		if (widgetContent[i].isData == 1 && _init == 1) {
+                        		console.log("init : " + i + " " + widgetContent[i].name);
+                		}
+
+                		//if canvas
+                		if (widgetContent[i].isCanvas == 1) {
+
+                        		var _c = $('<canvas/>').attr({'id': widgetContent[i].name + '_canvas' , 'width': _w,'height': _h, 'position': 'absolute', 'top':0});
+                        		$("#" + widgetContent[i].name).append(_c);
+  
+                        		//Canvas
+                        		if (widgetContent[i].name == "lab") {
+                                		_widgetLab.init(widgetContent[i].name + '_canvas');
+
+                                		$("#" + widgetContent[i].name).mouseover(function() {
+
+                                        		if (_widgetLab.state != LAB_STATE_CLOSED) {
+                                                		_widgetLab.state = LAB_STATE_IN;
+                                        		}
+                                		});
+
+                                		$("#" + widgetContent[i].name).mouseout(function() {
+
+                                        		if (_widgetLab.state != LAB_STATE_WAIT) {
+                                                		_widgetLab.state = LAB_STATE_OUT;
+                                        		}
+                                		});
+                        		}
+
+
+                        		if (widgetContent[i].name == "elevator") {
+                                		_widgetElevator.init(widgetContent[i].name + '_canvas');
+                        		}
+
+                		}
+
+                		$("#" + widgetContent[i].name).css("width",_w);
+                		$("#" + widgetContent[i].name).css("height",_h);
+                		$("#" + widgetContent[i].name).css("top",_y);
+                		$("#" + widgetContent[i].name).css("left",_x);
+                		$("#" + widgetContent[i].name).css("background-color",widgetContent[i].background);
+*/
+
+        		}
+  		}
+
+
+        // <!-- abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-=_+[]{}\|;':",./<>?`~!@#$%^&*() -->
+            window.onload = function () {
+
+		// Creates canvas 320 × 200 at 10, 50
+		paper = Raphael(0, 0, SIZE_W, SIZE_H);
+
+		//DRAW SPACES
+		var box = paper.rect(0,0,SQUARE_SIZE*22,SQUARE_SIZE*12);
+		box.attr("fill", "#ff7711");
+
+		//INIT WIDGETS
+		initWidgets();
+
+		//DRAW GRID
+		drawGrid();
+		
+            };
+        </script>
+    </head>
+    <body>
+        <div id="holder"></div>
+    </body>
+</html>
+
