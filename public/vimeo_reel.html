@@ -35,6 +35,21 @@
 
 var arrProjects = [
 	{
+		'id': '177092673',
+		'name': 'Lab Robot',
+		'desc': 'Telepresence interaction - test'
+	},
+	{
+		'id': '177091882',
+		'name': 'Lab Robot',
+		'desc': 'Telepresence test'
+	},
+	{
+		'id': '177091810',
+		'name': 'Lab Robot',
+		'desc': 'Alexa interaction'
+	},
+	{
 		'id': '172156968',
 		'name': 'Lab Robot',
 		'desc': 'Drive train test'
@@ -153,6 +168,16 @@ var arrProjects = [
         	'id': '57152546',
         	'name': 'Intel\'s Perceptual Computing SDK',
         	'desc': 'Using Intel\'s Perceptual Computing SDK hand and finger tracking features to control an audio synthesizer.'
+        },
+	{
+        	'id': '87187919',
+        	'name': 'Flip Dots Test',
+        	'desc': 'Kinetic sign research using flip dots'
+        },
+	{
+        	'id': '80244417',
+        	'name': 'Coppertone Kinectic Sign',
+        	'desc': 'A scale prototype of a physically animated sign'
         }
 ];
 
@@ -279,8 +304,8 @@ $(document).ready(function(){
     	//$("#player2").attr('width', _width);
     	//$("#player2").attr('height', _height);
 
-	var _top = _height * .65;
-	var _left = _width * .05;
+	var _top = _height * .05;
+	var _left = _height * .05;
 
 	console.log(_top);
 	console.log(_left);
@@ -292,7 +317,7 @@ $(document).ready(function(){
 	var _infoWidth = _width * .38;
 
     	$("#info").width(_infoWidth);
-    	$("#info").height(_infoHeight);
+    	//$("#info").height(_infoHeight);
 
 	var _fontTitle = _width * .04;
 	var _fontBody = _height * .04;
